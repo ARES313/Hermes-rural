@@ -755,6 +755,53 @@ const TeacherClassDetailPage = () => {
         .modal-content td {
           padding: 10px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          color: #e0e0e0;
+        }
+
+        .modal-content td .filename-cell {
+          color: #e0e0e0;
+        }
+
+        .actions-cell {
+          display: flex;
+          gap: 6px;
+          flex-wrap: nowrap;
+          justify-content: center;
+        }
+
+        .actions-cell .action-btn {
+          padding: 6px 12px;
+          font-size: 12px;
+          white-space: nowrap;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .actions-cell .action-btn:hover {
+          transform: scale(1.05);
+        }
+
+        .actions-cell .btn-view {
+          background: linear-gradient(135deg, #17a2b8, #20c997);
+          color: white;
+        }
+
+        .actions-cell .btn-download {
+          background: linear-gradient(135deg, #27ae60, #2ecc71);
+          color: white;
+        }
+
+        .actions-cell .btn-grade {
+          background: linear-gradient(135deg, #6c5ce7, #0984e3);
+          color: white;
+        }
+
+        .actions-cell .btn-edit-grade {
+          background: linear-gradient(135deg, #f39c12, #f1c40f);
+          color: #212529;
         }
 
         .modal-content input,
@@ -1149,10 +1196,10 @@ const TeacherClassDetailPage = () => {
                       {selectedTaskSubmissions.map((submission, idx) => (
                         <tr key={idx}>
                           <td>
-                            <div><strong style={{ color: '#f5e6b8' }}>{submission.studentname}</strong></div>
-                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{submission.studentemail}</div>
+                            <div><strong style={{ color: '#f5e6b8' }}>{submission.student_name}</strong></div>
+                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{submission.student_email}</div>
                           </td>
-                          <td>{submission.originalname || submission.filename || 'Archivo'}</td>
+                          <td style={{ color: '#e0e0e0' }}>{submission.original_name || submission.filename || 'Archivo'}</td>
                           <td style={{ textAlign: 'center' }}>
                             {submission.grade !== null && submission.grade !== undefined ? (
                               <div>
@@ -1165,27 +1212,27 @@ const TeacherClassDetailPage = () => {
                               <span style={{ color: 'rgba(255,255,255,0.4)' }}>Sin calificar</span>
                             )}
                           </td>
-                          <td>{new Date(submission.submittedat).toLocaleString()}</td>
+                          <td style={{ color: '#cccccc' }}>{new Date(submission.submitted_at).toLocaleString()}</td>
                           <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', justifyContent: 'center' }}>
                               <button
                                 onClick={() => handleViewSubmission(submission.id)}
                                 className="btn-info"
-                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
                               >
                                 👁️ Ver
                               </button>
                               <button
-                                onClick={() => handleDownloadSubmission(submission.id, submission.originalname || submission.filename || 'entrega')}
+                                onClick={() => handleDownloadSubmission(submission.id, submission.original_name || submission.filename || 'entrega')}
                                 className="btn-success"
-                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
                               >
                                 ⬇️ Descargar
                               </button>
                               <button
                                 onClick={() => handleOpenGradeModal(submission)}
                                 className={submission.grade !== null && submission.grade !== undefined ? 'btn-warning' : 'btn-primary'}
-                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
                               >
                                 {submission.grade !== null && submission.grade !== undefined ? '✏️ Editar' : '📝 Calificar'}
                               </button>
@@ -1201,8 +1248,8 @@ const TeacherClassDetailPage = () => {
                     <div className="modal-overlay" style={{ zIndex: 1001 }}>
                       <div className="grade-modal-inner">
                         <h3>Calificar Entrega</h3>
-                        <p><strong style={{ color: '#f5e6b8' }}>Estudiante:</strong> {selectedSubmission.studentname}</p>
-                        <p><strong style={{ color: '#f5e6b8' }}>Archivo:</strong> {selectedSubmission.originalname || selectedSubmission.filename || 'Archivo'}</p>
+                        <p><strong style={{ color: '#f5e6b8' }}>Estudiante:</strong> {selectedSubmission.student_name}</p>
+                        <p><strong style={{ color: '#f5e6b8' }}>Archivo:</strong> {selectedSubmission.original_name || selectedSubmission.filename || 'Archivo'}</p>
                         
                         <div style={{ marginBottom: '15px' }}>
                           <label>Calificación (0-100):</label>
