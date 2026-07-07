@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import TeacherContentManager from '../../components/teacher/TeacherContentManager';
@@ -13,6 +13,24 @@ import {
   deleteTask,
   getTaskSubmissions
 } from '../../services/api';
+
+const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
+
+const generateParticles = (count = 20) => {
+  const particles = [];
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      id: i,
+      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      size: 14 + Math.random() * 24,
+      duration: 8 + Math.random() * 12,
+      delay: Math.random() * 8,
+    });
+  }
+  return particles;
+};
 
 const TeacherClassDetailPage = () => {
   const { id: classId } = useParams();
@@ -65,6 +83,8 @@ const TeacherClassDetailPage = () => {
     description: '',
     due_date: ''
   });
+
+  const particles = useMemo(() => generateParticles(20), []);
 
   useEffect(() => {
     fetchData();
@@ -374,694 +394,1025 @@ const TeacherClassDetailPage = () => {
   };
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: '50px' }}>Cargando...</div>;
+    return (
+      <>
+        <style>{`
+          @keyframes floatParticle {
+            0% { transform: translateY(0px) translateX(0px); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-120px) translateX(40px); opacity: 0; }
+          }
+          .particle-bg {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            font-weight: bold;
+            color: rgba(255, 215, 0, 0.15);
+            filter: blur(1.5px);
+            animation: floatParticle linear infinite;
+          }
+        `}</style>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'linear-gradient(135deg, #0d0221 0%, #1a0a2e 30%, #16213e 60%, #0f3460 100%)',
+            overflow: 'hidden',
+            zIndex: -1,
+          }}
+        >
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="particle-bg"
+              style={{
+                left: `${p.left}%`,
+                top: `${p.top}%`,
+                fontSize: `${p.size}px`,
+                animationDuration: `${p.duration}s`,
+                animationDelay: `${p.delay}s`,
+              }}
+            >
+              {p.symbol}
+            </span>
+          ))}
+        </div>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'rgba(255,255,255,0.7)',
+          fontSize: '1.2rem',
+        }}>
+          Cargando...
+        </div>
+      </>
+    );
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <Link to="/teacher/classes" style={{ textDecoration: 'none', color: '#007bff' }}>
-          ← Volver a Mis Clases
-        </Link>
-      </div>
+    <>
+      <style>{`
+        @keyframes floatParticle {
+          0% {
+            transform: translateY(0px) translateX(0px);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.2;
+          }
+          90% {
+            opacity: 0.2;
+          }
+          100% {
+            transform: translateY(-120px) translateX(40px);
+            opacity: 0;
+          }
+        }
 
-      <h1>Gestión de Clase</h1>
-      <p style={{ color: '#666', marginBottom: '20px' }}>ID de Clase: {classId}</p>
+        .particle-bg {
+          position: absolute;
+          pointer-events: none;
+          user-select: none;
+          font-weight: bold;
+          color: rgba(255, 215, 0, 0.15);
+          filter: blur(1.5px);
+          animation: floatParticle linear infinite;
+        }
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '10px', borderBottom: '2px solid #e0e0e0', marginBottom: '20px' }}>
-        <button
-          onClick={() => setActiveTab('content')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: activeTab === 'content' ? '#007bff' : 'transparent',
-            color: activeTab === 'content' ? 'white' : '#333',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '5px 5px 0 0'
-          }}
-        >
-          Contenido
-        </button>
-        <button
-          onClick={() => setActiveTab('quizzes')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: activeTab === 'quizzes' ? '#007bff' : 'transparent',
-            color: activeTab === 'quizzes' ? 'white' : '#333',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '5px 5px 0 0'
-          }}
-        >
-          Quizzes
-        </button>
-        <button
-          onClick={() => setActiveTab('tasks')}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: activeTab === 'tasks' ? '#007bff' : 'transparent',
-            color: activeTab === 'tasks' ? 'white' : '#333',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '5px 5px 0 0'
-          }}
-        >
-          Tareas
-        </button>
-      </div>
+        .glass-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-      {/* Pestaña Contenido */}
-      {activeTab === 'content' && (
-        <TeacherContentManager classId={classId} />
-      )}
+        .glass-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
 
-      {/* Pestaña Quizzes */}
-      {activeTab === 'quizzes' && (
-        <div>
-          <div style={{ marginBottom: '20px' }}>
-            <button
-              onClick={() => setShowQuizForm(!showQuizForm)}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              {showQuizForm ? 'Cancelar' : '+ Nuevo Quiz'}
-            </button>
-          </div>
+        .tab-btn {
+          padding: 10px 20px;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+          border: none;
+          cursor: pointer;
+          border-radius: 8px 8px 0 0;
+          transition: background 0.2s, color 0.2s;
+          font-size: 14px;
+          font-weight: 500;
+        }
 
-          {showQuizForm && (
-            <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              <h3>Crear Nuevo Quiz</h3>
-              <div style={{ marginBottom: '15px' }}>
-                <input
-                  type="text"
-                  placeholder="Título del Quiz"
-                  value={newQuiz.title}
-                  onChange={(e) => setNewQuiz({ ...newQuiz, title: e.target.value })}
-                  style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                />
-                <textarea
-                  placeholder="Descripción"
-                  value={newQuiz.description}
-                  onChange={(e) => setNewQuiz({ ...newQuiz, description: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                />
-              </div>
+        .tab-btn.active {
+          background: rgba(255, 255, 255, 0.12);
+          color: #f5e6b8;
+        }
 
-              <div style={{ marginBottom: '15px', padding: '15px', backgroundColor: 'white', borderRadius: '5px' }}>
-                <h4>Agregar Pregunta</h4>
-                <div style={{ marginBottom: '10px' }}>
-                  <input
-                    type="text"
-                    placeholder="Texto de la pregunta"
-                    value={currentQuestion.question_text}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, question_text: e.target.value })}
-                    style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Opción A"
-                    value={currentQuestion.option_a}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_a: e.target.value })}
-                    style={{ width: '100%', padding: '8px', marginBottom: '5px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Opción B"
-                    value={currentQuestion.option_b}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_b: e.target.value })}
-                    style={{ width: '100%', padding: '8px', marginBottom: '5px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Opción C"
-                    value={currentQuestion.option_c}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_c: e.target.value })}
-                    style={{ width: '100%', padding: '8px', marginBottom: '5px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Opción D"
-                    value={currentQuestion.option_d}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_d: e.target.value })}
-                    style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  />
-                  <select
-                    value={currentQuestion.correct_answer}
-                    onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
-                    style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                  >
-                    <option value="a">Opción A es correcta</option>
-                    <option value="b">Opción B es correcta</option>
-                    <option value="c">Opción C es correcta</option>
-                    <option value="d">Opción D es correcta</option>
-                  </select>
-                </div>
-                <button
-                  onClick={addQuestion}
-                  style={{ padding: '8px 16px', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                >
-                  Agregar Pregunta
-                </button>
-              </div>
+        .tab-btn:hover:not(.active) {
+          background: rgba(255, 255, 255, 0.06);
+          color: #f5e6b8;
+        }
 
-              {newQuiz.questions.length > 0 && (
-                <div style={{ marginBottom: '15px' }}>
-                  <h4>Preguntas agregadas ({newQuiz.questions.length})</h4>
-                  {newQuiz.questions.map((q, idx) => (
-                    <div key={idx} style={{ padding: '10px', backgroundColor: 'white', marginBottom: '5px', borderRadius: '3px' }}>
-                      <p><strong>{idx + 1}. {q.question_text}</strong></p>
-                      <p style={{ fontSize: '12px' }}>Correcta: {q.correct_answer.toUpperCase()}</p>
-                      <button
-                        onClick={() => removeQuestion(idx)}
-                        style={{ fontSize: '12px', padding: '2px 8px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+        .btn-primary {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #6c5ce7, #0984e3);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-              <button
-                onClick={handleCreateQuiz}
-                style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-              >
-                Guardar Quiz
-              </button>
-            </div>
-          )}
+        .btn-primary:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+        }
 
-          {quizzes.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              No hay quizzes creados
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gap: '15px' }}>
-              {quizzes.map((quiz) => (
-                <div key={quiz.id} style={{ padding: '15px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: 'white' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                    <div>
-                      <h4 style={{ margin: '0 0 5px 0' }}>{quiz.title}</h4>
-                      <p style={{ margin: '5px 0', fontSize: '14px' }}>{quiz.description}</p>
-                      <p style={{ margin: '5px 0', fontSize: '12px', color: '#666' }}>
-                        Creado: {new Date(quiz.created_at).toLocaleDateString()} | Estado: {getStatusBadge(quiz.status)}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <button
-                        onClick={() => handleViewQuizResults(quiz.id, quiz.title)}
-                        style={{
-                          padding: '5px 10px',
-                          backgroundColor: '#17a2b8',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Ver Resultados
-                      </button>
-                      {quiz.status !== 'closed' && (
-                        <button
-                          onClick={() => handleQuizStatus(quiz.id, quiz.status)}
-                          style={{
-                            padding: '5px 10px',
-                            backgroundColor: quiz.status === 'draft' ? '#28a745' : '#dc3545',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '3px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {quiz.status === 'draft' ? 'Publicar' : 'Cerrar'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+        .btn-success {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #27ae60, #2ecc71);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-      {/* Modal de Entregas de Tareas */}
-      {showTaskSubmissions && selectedTaskSubmissions && (
-        <div style={{
+        .btn-success:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-danger {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #c0392b, #e74c3c);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-danger:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-warning {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #f39c12, #f1c40f);
+          color: #212529;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-warning:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(241, 196, 15, 0.4);
+        }
+
+        .btn-info {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #17a2b8, #20c997);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-info:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-secondary {
+          padding: 10px 20px;
+          background: rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-secondary:hover {
+          background: rgba(255, 255, 255, 0.2);
+          color: #f5e6b8;
+        }
+
+        .back-link {
+          text-decoration: none;
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.2s;
+        }
+
+        .back-link:hover {
+          color: #f5e6b8;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 40px;
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-text {
+          text-align: center;
+          padding: 40px;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .quiz-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .quiz-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .quiz-card h4 {
+          margin: 0 0 5px 0;
+          color: #f5e6b8;
+        }
+
+        .quiz-card p {
+          margin: 5px 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .task-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .task-card h4 {
+          margin: 0 0 5px 0;
+          color: #f5e6b8;
+        }
+
+        .task-card p {
+          margin: 5px 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(4px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+
+        .modal-content {
+          background: rgba(30, 30, 47, 0.95);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          padding: 25px;
+          max-width: 900px;
+          max-height: 90vh;
+          overflow-y: auto;
+          width: 95%;
+        }
+
+        .modal-content h3 {
+          color: #f5e6b8;
+          margin: 0;
+        }
+
+        .modal-content table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-content th {
+          padding: 10px;
+          text-align: left;
+          font-weight: bold;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+          color: #f5e6b8;
+        }
+
+        .modal-content td {
+          padding: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-content input,
+        .modal-content textarea,
+        .modal-content select {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #fff;
+          padding: 8px 12px;
+          width: 100%;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+
+        .modal-content input:focus,
+        .modal-content textarea:focus,
+        .modal-content select:focus {
+          border-color: #f0c040;
+        }
+
+        .modal-content label {
+          display: block;
+          margin-bottom: 5px;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+
+        .form-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          margin-bottom: 30px;
+        }
+
+        .form-card h3 {
+          color: #f5e6b8;
+          margin-top: 0;
+        }
+
+        .form-card h4 {
+          color: #f5e6b8;
+        }
+
+        .form-card input,
+        .form-card textarea,
+        .form-card select {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #fff;
+          padding: 8px 12px;
+          width: 100%;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+
+        .form-card input:focus,
+        .form-card textarea:focus,
+        .form-card select:focus {
+          border-color: #f0c040;
+        }
+
+        .form-card .question-item {
+          background: rgba(255, 255, 255, 0.04);
+          border-radius: 8px;
+          padding: 10px;
+          margin-bottom: 5px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .form-card .question-item p {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .grade-modal-inner {
+          background: rgba(30, 30, 47, 0.95);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          padding: 25px;
+          width: 400px;
+          max-width: 90%;
+        }
+
+        .grade-modal-inner h3 {
+          color: #f5e6b8;
+          margin-top: 0;
+        }
+
+        .grade-modal-inner p {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .grade-modal-inner input,
+        .grade-modal-inner textarea {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #fff;
+          padding: 8px 12px;
+          width: 100%;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+
+        .grade-modal-inner input:focus,
+        .grade-modal-inner textarea:focus {
+          border-color: #f0c040;
+        }
+
+        .grade-modal-inner label {
+          display: block;
+          margin-bottom: 5px;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+      `}</style>
+
+      {/* Fondo galaxia matemática */}
+      <div
+        style={{
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '25px',
-            maxWidth: '900px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0 }}>Entregas: {selectedTaskTitle}</h3>
+          width: '100vw',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #0d0221 0%, #1a0a2e 30%, #16213e 60%, #0f3460 100%)',
+          overflow: 'hidden',
+          zIndex: -1,
+        }}
+      >
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            className="particle-bg"
+            style={{
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              fontSize: `${p.size}px`,
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+            }}
+          >
+            {p.symbol}
+          </span>
+        ))}
+      </div>
+
+      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ marginBottom: '20px' }}>
+          <Link to="/teacher/classes" className="back-link">
+            ← Volver a Mis Clases
+          </Link>
+        </div>
+
+        <h1 style={{ color: '#f5e6b8', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 300, letterSpacing: '2px', marginBottom: '8px' }}>
+          Gestión de Clase
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>ID de Clase: {classId}</p>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '20px' }}>
+          <button
+            onClick={() => setActiveTab('content')}
+            className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}
+          >
+            Contenido
+          </button>
+          <button
+            onClick={() => setActiveTab('quizzes')}
+            className={`tab-btn ${activeTab === 'quizzes' ? 'active' : ''}`}
+          >
+            Quizzes
+          </button>
+          <button
+            onClick={() => setActiveTab('tasks')}
+            className={`tab-btn ${activeTab === 'tasks' ? 'active' : ''}`}
+          >
+            Tareas
+          </button>
+        </div>
+
+        {/* Pestaña Contenido */}
+        {activeTab === 'content' && (
+          <TeacherContentManager classId={classId} />
+        )}
+
+        {/* Pestaña Quizzes */}
+        {activeTab === 'quizzes' && (
+          <div>
+            <div style={{ marginBottom: '20px' }}>
               <button
-                onClick={() => setShowTaskSubmissions(false)}
-                style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '3px',
-                  cursor: 'pointer'
-                }}
+                onClick={() => setShowQuizForm(!showQuizForm)}
+                className={showQuizForm ? 'btn-secondary' : 'btn-success'}
               >
-                Cerrar
+                {showQuizForm ? 'Cancelar' : '+ Nuevo Quiz'}
               </button>
             </div>
-            
-            {loadingSubmissions ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>Cargando entregas...</div>
-            ) : selectedTaskSubmissions.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No hay entregas aún</div>
+
+            {showQuizForm && (
+              <div className="form-card">
+                <h3>Crear Nuevo Quiz</h3>
+                <div style={{ marginBottom: '15px' }}>
+                  <input
+                    type="text"
+                    placeholder="Título del Quiz"
+                    value={newQuiz.title}
+                    onChange={(e) => setNewQuiz({ ...newQuiz, title: e.target.value })}
+                    style={{ width: '100%', marginBottom: '10px' }}
+                  />
+                  <textarea
+                    placeholder="Descripción"
+                    value={newQuiz.description}
+                    onChange={(e) => setNewQuiz({ ...newQuiz, description: e.target.value })}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '15px', padding: '15px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <h4>Agregar Pregunta</h4>
+                  <div style={{ marginBottom: '10px' }}>
+                    <input
+                      type="text"
+                      placeholder="Texto de la pregunta"
+                      value={currentQuestion.question_text}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, question_text: e.target.value })}
+                      style={{ width: '100%', marginBottom: '10px' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Opción A"
+                      value={currentQuestion.option_a}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_a: e.target.value })}
+                      style={{ width: '100%', marginBottom: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Opción B"
+                      value={currentQuestion.option_b}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_b: e.target.value })}
+                      style={{ width: '100%', marginBottom: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Opción C"
+                      value={currentQuestion.option_c}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_c: e.target.value })}
+                      style={{ width: '100%', marginBottom: '5px' }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Opción D"
+                      value={currentQuestion.option_d}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, option_d: e.target.value })}
+                      style={{ width: '100%', marginBottom: '10px' }}
+                    />
+                    <select
+                      value={currentQuestion.correct_answer}
+                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, correct_answer: e.target.value })}
+                      style={{ width: '100%' }}
+                    >
+                      <option value="a">Opción A es correcta</option>
+                      <option value="b">Opción B es correcta</option>
+                      <option value="c">Opción C es correcta</option>
+                      <option value="d">Opción D es correcta</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={addQuestion}
+                    className="btn-info"
+                    style={{ padding: '8px 16px', fontSize: '13px' }}
+                  >
+                    Agregar Pregunta
+                  </button>
+                </div>
+
+                {newQuiz.questions.length > 0 && (
+                  <div style={{ marginBottom: '15px' }}>
+                    <h4>Preguntas agregadas ({newQuiz.questions.length})</h4>
+                    {newQuiz.questions.map((q, idx) => (
+                      <div key={idx} className="question-item">
+                        <p><strong>{idx + 1}. {q.question_text}</strong></p>
+                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Correcta: {q.correct_answer.toUpperCase()}</p>
+                        <button
+                          onClick={() => removeQuestion(idx)}
+                          className="btn-danger"
+                          style={{ fontSize: '12px', padding: '2px 8px' }}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleCreateQuiz}
+                  className="btn-primary"
+                >
+                  Guardar Quiz
+                </button>
+              </div>
+            )}
+
+            {quizzes.length === 0 ? (
+              <div className="empty-state">
+                No hay quizzes creados
+              </div>
             ) : (
-              <>
-                <table style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  fontSize: '14px'
-                }}>
-                                    <thead>
-                    <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                      <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Estudiante</th>
-                      <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Archivo</th>
-                      <th style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold' }}>Calificación</th>
-                      <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Fecha Entrega</th>
-                      <th style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold' }}>Acciones</th>
+              <div style={{ display: 'grid', gap: '15px' }}>
+                {quizzes.map((quiz) => (
+                  <div key={quiz.id} className="quiz-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                      <div>
+                        <h4>{quiz.title}</h4>
+                        <p style={{ fontSize: '14px' }}>{quiz.description}</p>
+                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                          Creado: {new Date(quiz.created_at).toLocaleDateString()} | Estado: {getStatusBadge(quiz.status)}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button
+                          onClick={() => handleViewQuizResults(quiz.id, quiz.title)}
+                          className="btn-info"
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Ver Resultados
+                        </button>
+                        {quiz.status !== 'closed' && (
+                          <button
+                            onClick={() => handleQuizStatus(quiz.id, quiz.status)}
+                            className={quiz.status === 'draft' ? 'btn-success' : 'btn-danger'}
+                            style={{ padding: '5px 10px', fontSize: '12px' }}
+                          >
+                            {quiz.status === 'draft' ? 'Publicar' : 'Cerrar'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Modal de Entregas de Tareas */}
+        {showTaskSubmissions && selectedTaskSubmissions && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3>Entregas: {selectedTaskTitle}</h3>
+                <button
+                  onClick={() => setShowTaskSubmissions(false)}
+                  className="btn-secondary"
+                  style={{ padding: '5px 10px', fontSize: '12px' }}
+                >
+                  Cerrar
+                </button>
+              </div>
+              
+              {loadingSubmissions ? (
+                <div className="loading-text">Cargando entregas...</div>
+              ) : selectedTaskSubmissions.length === 0 ? (
+                <div className="empty-state">No hay entregas aún</div>
+              ) : (
+                <>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Estudiante</th>
+                        <th>Archivo</th>
+                        <th style={{ textAlign: 'center' }}>Calificación</th>
+                        <th>Fecha Entrega</th>
+                        <th style={{ textAlign: 'center' }}>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedTaskSubmissions.map((submission, idx) => (
+                        <tr key={idx}>
+                          <td>
+                            <div><strong style={{ color: '#f5e6b8' }}>{submission.studentname}</strong></div>
+                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{submission.studentemail}</div>
+                          </td>
+                          <td>{submission.originalname || submission.filename || 'Archivo'}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            {submission.grade !== null && submission.grade !== undefined ? (
+                              <div>
+                                <span style={{ fontWeight: 'bold', color: '#2ecc71' }}>{submission.grade}/100</span>
+                                {submission.feedback && (
+                                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '3px' }}>"{submission.feedback}"</div>
+                                )}
+                              </div>
+                            ) : (
+                              <span style={{ color: 'rgba(255,255,255,0.4)' }}>Sin calificar</span>
+                            )}
+                          </td>
+                          <td>{new Date(submission.submittedat).toLocaleString()}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                              <button
+                                onClick={() => handleViewSubmission(submission.id)}
+                                className="btn-info"
+                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                              >
+                                👁️ Ver
+                              </button>
+                              <button
+                                onClick={() => handleDownloadSubmission(submission.id, submission.originalname || submission.filename || 'entrega')}
+                                className="btn-success"
+                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                              >
+                                ⬇️ Descargar
+                              </button>
+                              <button
+                                onClick={() => handleOpenGradeModal(submission)}
+                                className={submission.grade !== null && submission.grade !== undefined ? 'btn-warning' : 'btn-primary'}
+                                style={{ padding: '4px 8px', fontSize: '11px' }}
+                              >
+                                {submission.grade !== null && submission.grade !== undefined ? '✏️ Editar' : '📝 Calificar'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Modal interno para calificar */}
+                  {showGradeModal && selectedSubmission && (
+                    <div className="modal-overlay" style={{ zIndex: 1001 }}>
+                      <div className="grade-modal-inner">
+                        <h3>Calificar Entrega</h3>
+                        <p><strong style={{ color: '#f5e6b8' }}>Estudiante:</strong> {selectedSubmission.studentname}</p>
+                        <p><strong style={{ color: '#f5e6b8' }}>Archivo:</strong> {selectedSubmission.originalname || selectedSubmission.filename || 'Archivo'}</p>
+                        
+                        <div style={{ marginBottom: '15px' }}>
+                          <label>Calificación (0-100):</label>
+                          <input
+                            type="number"
+                            value={gradeValue}
+                            onChange={(e) => setGradeValue(e.target.value)}
+                            min="0"
+                            max="100"
+                            step="0.5"
+                            autoFocus
+                          />
+                        </div>
+                        
+                        <div style={{ marginBottom: '20px' }}>
+                          <label>Comentario (opcional):</label>
+                          <textarea
+                            value={feedbackValue}
+                            onChange={(e) => setFeedbackValue(e.target.value)}
+                            rows="3"
+                            placeholder="Escribe un comentario para el estudiante..."
+                          />
+                        </div>
+                        
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => {
+                              setShowGradeModal(false);
+                              setSelectedSubmission(null);
+                              setGradeValue('');
+                              setFeedbackValue('');
+                            }}
+                            className="btn-secondary"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={handleSaveGrade}
+                            className="btn-primary"
+                          >
+                            Guardar Calificación
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Modal de Resultados de Quiz */}
+        {showQuizResults && selectedQuizResults && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3>Resultados: {selectedQuizTitle}</h3>
+                <button
+                  onClick={() => setShowQuizResults(false)}
+                  className="btn-secondary"
+                  style={{ padding: '5px 10px', fontSize: '12px' }}
+                >
+                  Cerrar
+                </button>
+              </div>
+              
+              {loadingResults ? (
+                <div className="loading-text">Cargando resultados...</div>
+              ) : !selectedQuizResults || selectedQuizResults.length === 0 ? (
+                <div className="empty-state">No hay intentos aún</div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID Estudiante</th>
+                      <th>Nombre</th>
+                      <th style={{ textAlign: 'center' }}>Puntuación</th>
+                      <th>Estado</th>
+                      <th>Fecha Envío</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedTaskSubmissions.map((submission, idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid #dee2e6' }}>
-                        <td style={{ padding: '10px' }}>
-                          <div><strong>{submission.studentname}</strong></div>
-                          <div style={{ fontSize: '11px', color: '#666' }}>{submission.studentemail}</div>
+                    {selectedQuizResults.map((result, idx) => (
+                      <tr key={idx}>
+                        <td>{result.student_id}</td>
+                        <td>{result.student_name}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 'bold', color: '#f5e6b8' }}>{Number(result.score || 0).toFixed(2)}</td>
+                        <td>
+                          <span style={{
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: result.status === 'submitted' ? 'rgba(46,204,113,0.3)' : 'rgba(241,196,15,0.3)',
+                            color: result.status === 'submitted' ? '#2ecc71' : '#f1c40f',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                          }}>
+                            {result.status === 'submitted' ? 'Entregado' : result.status}
+                          </span>
                         </td>
-                        <td style={{ padding: '10px' }}>{submission.originalname || submission.filename || 'Archivo'}</td>
-                        <td style={{ padding: '10px', textAlign: 'center' }}>
-                          {submission.grade !== null && submission.grade !== undefined ? (
-                            <div>
-                              <span style={{ fontWeight: 'bold', color: '#28a745' }}>{submission.grade}/100</span>
-                              {submission.feedback && (
-                                <div style={{ fontSize: '11px', color: '#666', marginTop: '3px' }}>"{submission.feedback}"</div>
-                              )}
-                            </div>
-                          ) : (
-                            <span style={{ color: '#999' }}>Sin calificar</span>
-                          )}
-                        </td>
-                        <td style={{ padding: '10px' }}>{new Date(submission.submittedat).toLocaleString()}</td>
-                        <td style={{ padding: '10px', textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                            <button
-                              onClick={() => handleViewSubmission(submission.id)}
-                              style={{
-                                padding: '4px 8px',
-                                backgroundColor: '#17a2b8',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '3px',
-                                cursor: 'pointer',
-                                fontSize: '11px'
-                              }}
-                            >
-                              👁️ Ver
-                            </button>
-                            <button
-                              onClick={() => handleDownloadSubmission(submission.id, submission.originalname || submission.filename || 'entrega')}
-                              style={{
-                                padding: '4px 8px',
-                                backgroundColor: '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '3px',
-                                cursor: 'pointer',
-                                fontSize: '11px'
-                              }}
-                            >
-                              ⬇️ Descargar
-                            </button>
-                            <button
-                              onClick={() => handleOpenGradeModal(submission)}
-                              style={{
-                                padding: '4px 8px',
-                                backgroundColor: submission.grade !== null && submission.grade !== undefined ? '#ffc107' : '#007bff',
-                                color: submission.grade !== null && submission.grade !== undefined ? '#212529' : 'white',
-                                border: 'none',
-                                borderRadius: '3px',
-                                cursor: 'pointer',
-                                fontSize: '11px'
-                              }}
-                            >
-                              {submission.grade !== null && submission.grade !== undefined ? '✏️ Editar' : '📝 Calificar'}
-                            </button>
-                          </div>
-                        </td>
+                        <td>{result.finished_at ? new Date(result.finished_at).toLocaleString() : new Date(result.started_at).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-
-                {/* Modal interno para calificar */}
-                {showGradeModal && selectedSubmission && (
-                  <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 1001
-                  }}>
-                    <div style={{
-                      backgroundColor: 'white',
-                      borderRadius: '8px',
-                      padding: '25px',
-                      width: '400px',
-                      maxWidth: '90%',
-                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
-                    }}>
-                      <h3 style={{ marginTop: 0 }}>Calificar Entrega</h3>
-                      <p><strong>Estudiante:</strong> {selectedSubmission.studentname}</p>
-                      <p><strong>Archivo:</strong> {selectedSubmission.originalname || selectedSubmission.filename || 'Archivo'}</p>
-                      
-                      <div style={{ marginBottom: '15px' }}>
-                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Calificación (0-100):</label>
-                        <input
-                          type="number"
-                          value={gradeValue}
-                          onChange={(e) => setGradeValue(e.target.value)}
-                          min="0"
-                          max="100"
-                          step="0.5"
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px'
-                          }}
-                          autoFocus
-                        />
-                      </div>
-                      
-                      <div style={{ marginBottom: '20px' }}>
-                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Comentario (opcional):</label>
-                        <textarea
-                          value={feedbackValue}
-                          onChange={(e) => setFeedbackValue(e.target.value)}
-                          rows="3"
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            border: '1px solid #ccc',
-                            borderRadius: '4px',
-                            resize: 'vertical'
-                          }}
-                          placeholder="Escribe un comentario para el estudiante..."
-                        />
-                      </div>
-                      
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <button
-                          onClick={() => {
-                            setShowGradeModal(false);
-                            setSelectedSubmission(null);
-                            setGradeValue('');
-                            setFeedbackValue('');
-                          }}
-                          style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#6c757d',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={handleSaveGrade}
-                          style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Guardar Calificación
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal de Resultados de Quiz */}
-      {showQuizResults && selectedQuizResults && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            padding: '25px',
-            maxWidth: '900px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0 }}>Resultados: {selectedQuizTitle}</h3>
+        {/* Pestaña Tareas */}
+        {activeTab === 'tasks' && (
+          <div>
+            <div style={{ marginBottom: '20px' }}>
               <button
-                onClick={() => setShowQuizResults(false)}
-                style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '3px',
-                  cursor: 'pointer'
+                onClick={() => {
+                  setShowTaskForm(!showTaskForm);
+                  if (!showTaskForm) {
+                    setEditingTask(null);
+                    setNewTask({ title: '', description: '', due_date: '' });
+                  }
                 }}
+                className={showTaskForm ? 'btn-secondary' : 'btn-success'}
               >
-                Cerrar
+                {showTaskForm ? 'Cancelar' : '+ Nueva Tarea'}
               </button>
             </div>
-            
-            {loadingResults ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>Cargando resultados...</div>
-            ) : !selectedQuizResults || selectedQuizResults.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No hay intentos aún</div>
-            ) : (
-              <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                fontSize: '14px'
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-                    <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>ID Estudiante</th>
-                    <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Nombre</th>
-                    <th style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold' }}>Puntuación</th>
-                    <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Estado</th>
-                    <th style={{ padding: '10px', textAlign: 'left', fontWeight: 'bold' }}>Fecha Envío</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedQuizResults.map((result, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid #dee2e6' }}>
-                      <td style={{ padding: '10px' }}>{result.student_id}</td>
-                      <td style={{ padding: '10px' }}>{result.student_name}</td>
-                      <td style={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#007bff' }}>{Number(result.score || 0).toFixed(2)}</td>
-                      <td style={{ padding: '10px' }}>
-                        <span style={{
-                          padding: '3px 8px',
-                          borderRadius: '3px',
-                          backgroundColor: result.status === 'submitted' ? '#28a745' : '#ffc107',
-                          color: 'white',
-                          fontSize: '12px'
-                        }}>
-                          {result.status === 'submitted' ? 'Entregado' : result.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '10px' }}>{result.finished_at ? new Date(result.finished_at).toLocaleString() : new Date(result.started_at).toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-      )}
 
-      {/* Pestaña Tareas */}
-      {activeTab === 'tasks' && (
-        <div>
-          <div style={{ marginBottom: '20px' }}>
-            <button
-              onClick={() => {
-                setShowTaskForm(!showTaskForm);
-                if (!showTaskForm) {
-                  setEditingTask(null);
-                  setNewTask({ title: '', description: '', due_date: '' });
-                }
-              }}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              {showTaskForm ? 'Cancelar' : '+ Nueva Tarea'}
-            </button>
-          </div>
-
-          {showTaskForm && (
-            <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              <h3>{editingTask ? 'Editar Tarea' : 'Crear Tarea'}</h3>
-              <div style={{ marginBottom: '15px' }}>
-                <input
-                  type="text"
-                  placeholder="Título"
-                  value={newTask.title}
-                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                />
-                <textarea
-                  placeholder="Descripción"
-                  value={newTask.description}
-                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                />
-                <input
-                  type="date"
-                  value={newTask.due_date}
-                  onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ced4da', borderRadius: '4px' }}
-                />
+            {showTaskForm && (
+              <div className="form-card">
+                <h3>{editingTask ? 'Editar Tarea' : 'Crear Tarea'}</h3>
+                <div style={{ marginBottom: '15px' }}>
+                  <input
+                    type="text"
+                    placeholder="Título"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                    style={{ width: '100%', marginBottom: '10px' }}
+                  />
+                  <textarea
+                    placeholder="Descripción"
+                    value={newTask.description}
+                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                    style={{ width: '100%', marginBottom: '10px' }}
+                  />
+                  <input
+                    type="date"
+                    value={newTask.due_date}
+                    onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <button
+                  onClick={editingTask ? handleUpdateTask : handleCreateTask}
+                  className="btn-primary"
+                >
+                  {editingTask ? 'Actualizar' : 'Crear'}
+                </button>
               </div>
-              <button
-                onClick={editingTask ? handleUpdateTask : handleCreateTask}
-                style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-              >
-                {editingTask ? 'Actualizar' : 'Crear'}
-              </button>
-            </div>
-          )}
+            )}
 
-          {tasks.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              No hay tareas creadas
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gap: '15px' }}>
-              {tasks.map((task) => (
-                <div key={task.id} style={{ padding: '15px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: 'white' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: '0 0 5px 0' }}>{task.title}</h4>
-                      <p style={{ margin: '5px 0', fontSize: '14px' }}>{task.description}</p>
-                      <p style={{ margin: '5px 0', fontSize: '12px', color: '#666' }}>
-                        {task.due_date && `Fecha límite: ${new Date(task.due_date).toLocaleDateString()} | `}
-                        Estado: {task.status === 'active' ? 'Activa' : 'Cerrada'}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '5px' }}>
-                      <button
-                        onClick={() => handleViewTaskSubmissions(task.id, task.title)}
-                        style={{
-                          padding: '5px 10px',
-                          backgroundColor: '#17a2b8',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Ver Entregas
-                      </button>
-                      <button
-                        onClick={() => handleEditTask(task)}
-                        style={{
-                          padding: '5px 10px',
-                          backgroundColor: '#ffc107',
-                          color: '#212529',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDeleteTask(task.id, task.title)}
-                        style={{
-                          padding: '5px 10px',
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Eliminar
-                      </button>
+            {tasks.length === 0 ? (
+              <div className="empty-state">
+                No hay tareas creadas
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gap: '15px' }}>
+                {tasks.map((task) => (
+                  <div key={task.id} className="task-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                      <div style={{ flex: 1 }}>
+                        <h4>{task.title}</h4>
+                        <p style={{ fontSize: '14px' }}>{task.description}</p>
+                        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                          {task.due_date && `Fecha límite: ${new Date(task.due_date).toLocaleDateString()} | `}
+                          Estado: {task.status === 'active' ? 'Activa' : 'Cerrada'}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '5px' }}>
+                        <button
+                          onClick={() => handleViewTaskSubmissions(task.id, task.title)}
+                          className="btn-info"
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Ver Entregas
+                        </button>
+                        <button
+                          onClick={() => handleEditTask(task)}
+                          className="btn-warning"
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTask(task.id, task.title)}
+                          className="btn-danger"
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
