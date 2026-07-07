@@ -144,162 +144,172 @@ const StudentDashboardPage = () => {
       <div style={{
         position: 'relative',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-        overflow: 'hidden',
+        width: '100%',
+        background: 'linear-gradient(135deg, #0f0c1b 0%, #1a103c 50%, #0d1b2a 100%)',
+        backgroundAttachment: 'fixed',
         padding: '20px',
         maxWidth: '1200px',
         margin: '0 auto',
         color: '#f0e6d0'
       }}>
-        {/* Floating math symbols */}
-        {particles.map((p) => (
-          <span
-            key={p.id}
-            className="particle"
-            style={{
-              left: `${p.left}%`,
-              top: `${p.top}%`,
-              fontSize: `${p.size}px`,
-              animationDuration: `${p.duration}s`,
-              animationDelay: `${p.delay}s`,
-            }}
-          >
-            {p.symbol}
-          </span>
-        ))}
-
-        {/* Header */}
+        {/* Floating math symbols container */}
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '30px',
-          paddingBottom: '20px',
-          borderBottom: '1px solid rgba(255,255,255,0.15)',
-          position: 'relative',
-          zIndex: 1
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 0
         }}>
-          <div>
-            <h1 style={{ margin: 0, color: '#f0e6d0', textShadow: '0 0 10px rgba(102,126,234,0.5)' }}>
-              Hermes Rural - Estudiante
-            </h1>
-            <p style={{ margin: '5px 0 0', color: '#c0b8a0' }}>Panel de Estudiante</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="btn-logout"
-          >
-            Cerrar Sesión
-          </button>
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="particle"
+              style={{
+                left: `${p.left}%`,
+                top: `${p.top}%`,
+                fontSize: `${p.size}px`,
+                animationDuration: `${p.duration}s`,
+                animationDelay: `${p.delay}s`,
+              }}
+            >
+              {p.symbol}
+            </span>
+          ))}
         </div>
 
-        {/* Profile card */}
-        <div className="glass-card" style={{
-          marginBottom: '30px',
-          padding: '24px',
-          position: 'relative',
-          zIndex: 1
-        }}>
-          <h2 style={{ marginTop: 0, color: '#f0e6d0' }}>Bienvenido, {user?.full_name}!</h2>
-          <p><strong>Email:</strong> {user?.email}</p>
-          <p><strong>Rol:</strong> <span style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            padding: '3px 10px',
-            borderRadius: '3px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            display: 'inline-block'
-          }}>ESTUDIANTE</span></p>
-        </div>
-
-        {/* Quick Navigation + AI button */}
-        <div style={{ marginBottom: '30px', position: 'relative', zIndex: 1 }}>
-          <h2>📚 Navegación Rápida</h2>
+        {/* Content wrapper */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* Header */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px',
-            marginTop: '15px'
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '30px',
+            paddingBottom: '20px',
+            borderBottom: '1px solid rgba(255,255,255,0.15)'
           }}>
-            <Link to="/student/classes" style={{ textDecoration: 'none' }}>
+            <div>
+              <h1 style={{ margin: 0, color: '#f0e6d0', textShadow: '0 0 10px rgba(102,126,234,0.5)' }}>
+                Hermes Rural - Estudiante
+              </h1>
+              <p style={{ margin: '5px 0 0', color: '#c0b8a0' }}>Panel de Estudiante</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="btn-logout"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+
+          {/* Profile card */}
+          <div className="glass-card" style={{
+            marginBottom: '30px',
+            padding: '24px'
+          }}>
+            <h2 style={{ marginTop: 0, color: '#f0e6d0' }}>Bienvenido, {user?.full_name}!</h2>
+            <p><strong>Email:</strong> {user?.email}</p>
+            <p><strong>Rol:</strong> <span style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              padding: '3px 10px',
+              borderRadius: '3px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              display: 'inline-block'
+            }}>ESTUDIANTE</span></p>
+          </div>
+
+          {/* Quick Navigation + AI button */}
+          <div style={{ marginBottom: '30px' }}>
+            <h2>📚 Navegación Rápida</h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '20px',
+              marginTop: '15px'
+            }}>
+              <Link to="/student/classes" style={{ textDecoration: 'none' }}>
+                <div className="glass-card" style={{
+                  padding: '30px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s'
+                }}>
+                  <div style={{ fontSize: '48px' }}>📖</div>
+                  <h3 style={{ color: '#f0e6d0' }}>Mis Clases</h3>
+                  <p style={{ color: '#c0b8a0' }}>Ver todas tus clases matriculadas</p>
+                </div>
+              </Link>
+              {/* AI button card */}
               <div className="glass-card" style={{
                 padding: '30px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                transition: 'transform 0.2s'
+                transition: 'transform 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
               }}>
-                <div style={{ fontSize: '48px' }}>📖</div>
-                <h3 style={{ color: '#f0e6d0' }}>Mis Clases</h3>
-                <p style={{ color: '#c0b8a0' }}>Ver todas tus clases matriculadas</p>
+                <div style={{ fontSize: '48px', marginBottom: '10px' }}>🤖</div>
+                <button
+                  onClick={() => navigate('/ai-access')}
+                  className="btn-ai"
+                >
+                  Hablar con la IA
+                </button>
               </div>
-            </Link>
-            {/* AI button card */}
-            <div className="glass-card" style={{
-              padding: '30px',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'transform 0.2s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              <div style={{ fontSize: '48px', marginBottom: '10px' }}>🤖</div>
-              <button
-                onClick={() => navigate('/ai-access')}
-                className="btn-ai"
-              >
-                Hablar con la IA
-              </button>
             </div>
           </div>
-        </div>
 
-        {/* Classes summary */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h2>📋 Resumen de Clases Matriculadas</h2>
-          {loading && <div style={{ textAlign: 'center', padding: '40px' }}>Cargando clases...</div>}
-          {error && (
-            <div style={{
-              padding: '15px',
-              backgroundColor: 'rgba(220,53,69,0.2)',
-              backdropFilter: 'blur(8px)',
-              color: '#f8d7da',
-              borderRadius: '8px',
-              border: '1px solid rgba(220,53,69,0.3)'
-            }}>
-              {error}
-            </div>
-          )}
-          {!loading && !error && classes.length === 0 && (
-            <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
-              No estás matriculado en ninguna clase aún.
-            </div>
-          )}
-          {!loading && !error && classes.length > 0 && (
-            <div style={{ display: 'grid', gap: '15px', marginTop: '15px' }}>
-              {classes.slice(0, 3).map((classItem) => (
-                <div key={classItem.id} className="glass-card" style={{ padding: '20px' }}>
-                  <h3 style={{ margin: '0 0 10px 0', color: '#f0e6d0' }}>{classItem.name}</h3>
-                  <p style={{ margin: '5px 0', color: '#c0b8a0' }}>{classItem.description}</p>
-                  <p><strong>Docente:</strong> {classItem.teacher_name}</p>
-                  <Link to={`/student/classes/${classItem.id}`}>
-                    <button className="btn-primary" style={{ marginTop: '10px' }}>
-                      Entrar a la Clase
+          {/* Classes summary */}
+          <div>
+            <h2>📋 Resumen de Clases Matriculadas</h2>
+            {loading && <div style={{ textAlign: 'center', padding: '40px' }}>Cargando clases...</div>}
+            {error && (
+              <div style={{
+                padding: '15px',
+                backgroundColor: 'rgba(220,53,69,0.2)',
+                backdropFilter: 'blur(8px)',
+                color: '#f8d7da',
+                borderRadius: '8px',
+                border: '1px solid rgba(220,53,69,0.3)'
+              }}>
+                {error}
+              </div>
+            )}
+            {!loading && !error && classes.length === 0 && (
+              <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
+                No estás matriculado en ninguna clase aún.
+              </div>
+            )}
+            {!loading && !error && classes.length > 0 && (
+              <div style={{ display: 'grid', gap: '15px', marginTop: '15px' }}>
+                {classes.slice(0, 3).map((classItem) => (
+                  <div key={classItem.id} className="glass-card" style={{ padding: '20px' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: '#f0e6d0' }}>{classItem.name}</h3>
+                    <p style={{ margin: '5px 0', color: '#c0b8a0' }}>{classItem.description}</p>
+                    <p><strong>Docente:</strong> {classItem.teacher_name}</p>
+                    <Link to={`/student/classes/${classItem.id}`}>
+                      <button className="btn-primary" style={{ marginTop: '10px' }}>
+                        Entrar a la Clase
+                      </button>
+                    </Link>
+                  </div>
+                ))}
+                {classes.length > 3 && (
+                  <Link to="/student/classes">
+                    <button className="btn-secondary" style={{ width: '100%', padding: '12px' }}>
+                      Ver todas ({classes.length} clases)
                     </button>
                   </Link>
-                </div>
-              ))}
-              {classes.length > 3 && (
-                <Link to="/student/classes">
-                  <button className="btn-secondary" style={{ width: '100%', padding: '12px' }}>
-                    Ver todas ({classes.length} clases)
-                  </button>
-                </Link>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
