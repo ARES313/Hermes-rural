@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { getStudentMyClasses } from '../../services/api';
 
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫'];
+const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
 
 const generateParticles = (count = 20) => {
   const particles = [];
@@ -15,7 +15,7 @@ const generateParticles = (count = 20) => {
       top: Math.random() * 100,
       size: 14 + Math.random() * 24,
       duration: 8 + Math.random() * 12,
-      delay: Math.random() * 5,
+      delay: Math.random() * 8,
     });
   }
   return particles;
@@ -54,262 +54,334 @@ const StudentDashboardPage = () => {
   return (
     <>
       <style>{`
-        @keyframes floatSymbols {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.15; }
-          50% { transform: translateY(-30px) rotate(180deg); opacity: 0.25; }
-          100% { transform: translateY(0px) rotate(360deg); opacity: 0.15; }
-        }
-        .particle {
-          position: absolute;
-          pointer-events: none;
-          animation: floatSymbols linear infinite;
-          filter: blur(1px);
-          color: rgba(255,255,255,0.15);
-          font-weight: bold;
-          user-select: none;
-        }
-        .glass-card {
-          background: rgba(255,255,255,0.08);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255,255,255,0.18);
-          border-radius: 16px;
-          box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
-          color: #f0e6d0;
-        }
-        .btn-ai {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          color: white;
-          padding: 14px 28px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          border-radius: 12px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 0 15px rgba(102,126,234,0.5);
-          width: 100%;
-          text-align: center;
-        }
-        .btn-ai:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 0 25px rgba(102,126,234,0.8);
-        }
-        .btn-logout {
-          background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
-          border: none;
-          color: white;
-          padding: 10px 20px;
-          font-size: 1rem;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .btn-logout:hover {
-          transform: scale(1.03);
-          box-shadow: 0 4px 15px rgba(220,53,69,0.4);
-        }
-        .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(102,126,234,0.5);
-        }
-        .btn-secondary {
-          background: rgba(255,255,255,0.15);
-          backdrop-filter: blur(4px);
-          border: 1px solid rgba(255,255,255,0.2);
-          color: #f0e6d0;
-          padding: 12px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .btn-secondary:hover {
-          background: rgba(255,255,255,0.25);
-        }
-        @media (max-width: 768px) {
-          .glass-card {
-            padding: 16px !important;
+        @keyframes floatParticle {
+          0% {
+            transform: translateY(0px) translateX(0px);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.2;
+          }
+          90% {
+            opacity: 0.2;
+          }
+          100% {
+            transform: translateY(-120px) translateX(40px);
+            opacity: 0;
           }
         }
+
+        .particle-bg {
+          position: absolute;
+          pointer-events: none;
+          user-select: none;
+          font-weight: bold;
+          color: rgba(255, 215, 0, 0.15);
+          filter: blur(1.5px);
+          animation: floatParticle linear infinite;
+        }
+
+        .glass-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .glass-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-logout {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #c0392b, #e74c3c);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-logout:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-ai {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #6c5ce7, #0984e3, #fdcb6e);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+          animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .btn-ai:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 20px rgba(108, 92, 231, 0.5);
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% {
+            box-shadow: 0 0 8px rgba(108, 92, 231, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.6);
+          }
+        }
+
+        .link-card {
+          text-decoration: none;
+          display: block;
+        }
+
+        .link-card .glass-card {
+          text-align: center;
+        }
+
+        .link-card .glass-card h3 {
+          margin: 10px 0;
+          color: #f5e6b8;
+        }
+
+        .link-card .glass-card p {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 14px;
+        }
+
+        .class-item {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .class-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .class-item h3 {
+          margin: 0 0 10px 0;
+          color: #f5e6b8;
+        }
+
+        .class-item p {
+          margin: 5px 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .class-item span {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 15px;
+        }
+
+        .info-grid p {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-grid strong {
+          color: #f5e6b8;
+        }
+
+        .badge-role {
+          background: linear-gradient(135deg, #6c5ce7, #0984e3);
+          color: white;
+          padding: 3px 10px;
+          border-radius: 6px;
+          font-size: 12px;
+          font-weight: bold;
+          margin-left: 8px;
+          display: inline-block;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 40px;
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-text {
+          text-align: center;
+          padding: 40px;
+          color: rgba(255, 255, 255, 0.7);
+        }
       `}</style>
-      <div style={{
-        position: 'relative',
-        minHeight: '100vh',
-        width: '100%',
-        background: 'linear-gradient(135deg, #0f0c1b 0%, #1a103c 50%, #0d1b2a 100%)',
-        backgroundAttachment: 'fixed',
-        padding: '20px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        color: '#f0e6d0'
-      }}>
-        {/* Floating math symbols container */}
-        <div style={{
-          position: 'absolute',
+
+      {/* Fondo galaxia matemática */}
+      <div
+        style={{
+          position: 'fixed',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          zIndex: 0
+          width: '100vw',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #0d0221 0%, #1a0a2e 30%, #16213e 60%, #0f3460 100%)',
+          overflow: 'hidden',
+          zIndex: -1,
+        }}
+      >
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            className="particle-bg"
+            style={{
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              fontSize: `${p.size}px`,
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+            }}
+          >
+            {p.symbol}
+          </span>
+        ))}
+      </div>
+
+      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        {/* Encabezado */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '30px',
+          paddingBottom: '20px',
+          borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
-          {particles.map((p) => (
-            <span
-              key={p.id}
-              className="particle"
-              style={{
-                left: `${p.left}%`,
-                top: `${p.top}%`,
-                fontSize: `${p.size}px`,
-                animationDuration: `${p.duration}s`,
-                animationDelay: `${p.delay}s`,
-              }}
-            >
-              {p.symbol}
-            </span>
-          ))}
+          <div>
+            <h1 style={{ margin: 0, color: '#f5e6b8', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 300, letterSpacing: '2px' }}>
+              Hermes Rural — Estudiante
+            </h1>
+            <p style={{ margin: '5px 0 0', color: 'rgba(255,255,255,0.6)' }}>Panel de Estudiante</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="btn-logout"
+          >
+            Cerrar Sesión
+          </button>
         </div>
 
-        {/* Content wrapper */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {/* Header */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '30px',
-            paddingBottom: '20px',
-            borderBottom: '1px solid rgba(255,255,255,0.15)'
+        {/* Información del Usuario */}
+        <div className="glass-card" style={{ marginBottom: '30px' }}>
+          <h2 style={{ marginTop: 0, color: '#f5e6b8', fontSize: '1.3rem', fontWeight: 400 }}>Información del Usuario</h2>
+          <div className="info-grid">
+            <p><strong>Nombre:</strong> {user?.full_name}</p>
+            <p><strong>Email:</strong> {user?.email}</p>
+            <p><strong>Rol:</strong> 
+              <span className="badge-role">
+                ESTUDIANTE
+              </span>
+            </p>
+            <p><strong>ID:</strong> {user?.id}</p>
+          </div>
+        </div>
+
+        {/* Navegación Rápida + IA */}
+        <div style={{ marginBottom: '30px' }}>
+          <h2 style={{ color: '#f5e6b8', marginBottom: '15px', fontSize: '1.3rem', fontWeight: 400 }}>📚 Navegación Rápida</h2>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+            gap: '20px'
           }}>
-            <div>
-              <h1 style={{ margin: 0, color: '#f0e6d0', textShadow: '0 0 10px rgba(102,126,234,0.5)' }}>
-                Hermes Rural - Estudiante
-              </h1>
-              <p style={{ margin: '5px 0 0', color: '#c0b8a0' }}>Panel de Estudiante</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="btn-logout"
+            <Link
+              to="/student/classes"
+              className="link-card"
             >
-              Cerrar Sesión
+              <div className="glass-card">
+                <h3>Mis Clases</h3>
+                <p>Ver todas tus clases matriculadas</p>
+              </div>
+            </Link>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+            gap: '20px',
+            marginTop: '20px'
+          }}>
+            <button
+              onClick={() => navigate('/ai-access')}
+              className="btn-ai"
+            >
+              Hablar con la IA
             </button>
           </div>
+        </div>
 
-          {/* Profile card */}
-          <div className="glass-card" style={{
-            marginBottom: '30px',
-            padding: '24px'
-          }}>
-            <h2 style={{ marginTop: 0, color: '#f0e6d0' }}>Bienvenido, {user?.full_name}!</h2>
-            <p><strong>Email:</strong> {user?.email}</p>
-            <p><strong>Rol:</strong> <span style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              padding: '3px 10px',
-              borderRadius: '3px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              display: 'inline-block'
-            }}>ESTUDIANTE</span></p>
-          </div>
-
-          {/* Quick Navigation + AI button */}
-          <div style={{ marginBottom: '30px' }}>
-            <h2>📚 Navegación Rápida</h2>
+        {/* Resumen de Clases */}
+        <div>
+          <h2 style={{ color: '#f5e6b8', marginBottom: '15px', fontSize: '1.3rem', fontWeight: 400 }}>📋 Resumen de Clases Matriculadas</h2>
+          {loading && <div className="loading-text">Cargando clases...</div>}
+          {error && (
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '20px',
-              marginTop: '15px'
+              padding: '15px',
+              backgroundColor: 'rgba(220,53,69,0.2)',
+              backdropFilter: 'blur(8px)',
+              color: '#f8d7da',
+              borderRadius: '8px',
+              border: '1px solid rgba(220,53,69,0.3)'
             }}>
-              <Link to="/student/classes" style={{ textDecoration: 'none' }}>
-                <div className="glass-card" style={{
-                  padding: '30px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s'
-                }}>
-                  <div style={{ fontSize: '48px' }}>📖</div>
-                  <h3 style={{ color: '#f0e6d0' }}>Mis Clases</h3>
-                  <p style={{ color: '#c0b8a0' }}>Ver todas tus clases matriculadas</p>
-                </div>
-              </Link>
-              {/* AI button card */}
-              <div className="glass-card" style={{
-                padding: '30px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'transform 0.2s',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-                <div style={{ fontSize: '48px', marginBottom: '10px' }}>🤖</div>
-                <button
-                  onClick={() => navigate('/ai-access')}
-                  className="btn-ai"
-                >
-                  Hablar con la IA
-                </button>
-              </div>
+              {error}
             </div>
-          </div>
-
-          {/* Classes summary */}
-          <div>
-            <h2>📋 Resumen de Clases Matriculadas</h2>
-            {loading && <div style={{ textAlign: 'center', padding: '40px' }}>Cargando clases...</div>}
-            {error && (
-              <div style={{
-                padding: '15px',
-                backgroundColor: 'rgba(220,53,69,0.2)',
-                backdropFilter: 'blur(8px)',
-                color: '#f8d7da',
-                borderRadius: '8px',
-                border: '1px solid rgba(220,53,69,0.3)'
-              }}>
-                {error}
-              </div>
-            )}
-            {!loading && !error && classes.length === 0 && (
-              <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
-                No estás matriculado en ninguna clase aún.
-              </div>
-            )}
-            {!loading && !error && classes.length > 0 && (
-              <div style={{ display: 'grid', gap: '15px', marginTop: '15px' }}>
-                {classes.slice(0, 3).map((classItem) => (
-                  <div key={classItem.id} className="glass-card" style={{ padding: '20px' }}>
-                    <h3 style={{ margin: '0 0 10px 0', color: '#f0e6d0' }}>{classItem.name}</h3>
-                    <p style={{ margin: '5px 0', color: '#c0b8a0' }}>{classItem.description}</p>
-                    <p><strong>Docente:</strong> {classItem.teacher_name}</p>
-                    <Link to={`/student/classes/${classItem.id}`}>
-                      <button className="btn-primary" style={{ marginTop: '10px' }}>
-                        Entrar a la Clase
-                      </button>
-                    </Link>
+          )}
+          {!loading && !error && classes.length === 0 && (
+            <div className="empty-state">
+              No estás matriculado en ninguna clase aún.
+            </div>
+          )}
+          {!loading && !error && classes.length > 0 && (
+            <div style={{ display: 'grid', gap: '15px' }}>
+              {classes.slice(0, 3).map((classItem) => (
+                <div key={classItem.id} className="class-item">
+                  <h3>{classItem.name}</h3>
+                  <p>{classItem.description}</p>
+                  <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>
+                    <span>Docente: {classItem.teacher_name}</span>
                   </div>
-                ))}
-                {classes.length > 3 && (
-                  <Link to="/student/classes">
-                    <button className="btn-secondary" style={{ width: '100%', padding: '12px' }}>
-                      Ver todas ({classes.length} clases)
+                  <Link to={`/student/classes/${classItem.id}`}>
+                    <button className="btn-ai" style={{ marginTop: '10px', padding: '8px 16px', fontSize: '14px', animation: 'none' }}>
+                      Entrar a la Clase
                     </button>
                   </Link>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {classes.length > 3 && (
+                <Link to="/student/classes">
+                  <button className="btn-ai" style={{ width: '100%', padding: '12px', animation: 'none' }}>
+                    Ver todas ({classes.length} clases)
+                  </button>
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
