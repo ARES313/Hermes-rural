@@ -218,7 +218,7 @@ const TeacherClassesPage = () => {
 
       <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '20px' }}>
-          <Link to="/teacher/dashboard" className="back-link">
+          <Link to="/dashboard" className="back-link">
             ← Volver al Dashboard
           </Link>
         </div>

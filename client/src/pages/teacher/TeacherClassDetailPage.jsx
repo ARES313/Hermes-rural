@@ -976,7 +976,7 @@ const TeacherClassDetailPage = () => {
         <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>ID de Clase: {classId}</p>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid rgba(119, 116, 116, 0.74)', marginBottom: '20px' }}>
           <button
             onClick={() => setActiveTab('content')}
             className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}

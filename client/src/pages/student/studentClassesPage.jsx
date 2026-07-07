@@ -207,6 +207,16 @@ const StudentClassesPage = () => {
           padding: 40px;
           color: rgba(255, 255, 255, 0.7);
         }
+
+        .back-link {
+          text-decoration: none;
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.2s;
+        }
+
+        .back-link:hover {
+          color: #f5e6b8;
+        }
       `}</style>
 
       {/* Fondo galaxia matemática */}
@@ -240,6 +250,12 @@ const StudentClassesPage = () => {
       </div>
 
       <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ marginBottom: '20px' }}>
+          <Link to="/student/dashboard" className="back-link">
+            ← Volver al inicio
+          </Link>
+        </div>
+
         {/* Encabezado */}
         <div style={{ 
           display: 'flex', 

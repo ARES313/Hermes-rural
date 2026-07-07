@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Backend API (Node.js + Express + SQLite)
+  server:
+    build: ./server
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist uploaded files
+      - server_storage:/app/storage
+      # Persist SQLite database
+      - server_database:/app/src/database
+    environment:
+      - PORT=3000
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2-math:latest}
+      - JWT_SECRET=${JWT_SECRET:-cambia_esta_clave_en_produccion}
+      - AI_ACCESS_CODE=${AI_ACCESS_CODE:-}
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Frontend (React + Vite + Nginx)
+  client:
+    build: ./client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  # AI Model Server (Ollama)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    # Auto-download the model on startup
+    entrypoint: >
+      sh -c "ollama serve &
+      until ollama list >/dev/null 2>&1; do
+        sleep 2
+      done &&
+      ollama pull ${OLLAMA_MODEL:-qwen2-math:latest} &&
+      wait"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  server_storage:
+  server_database:
+  ollama_data:

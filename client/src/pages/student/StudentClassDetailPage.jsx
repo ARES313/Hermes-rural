@@ -266,7 +266,41 @@ const StudentClassDetailPage = () => {
           box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .btn-logout {
+        .btn-primary {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #6c5ce7, #0984e3);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-success {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #27ae60, #2ecc71);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-success:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-danger {
           padding: 10px 20px;
           background: linear-gradient(135deg, #c0392b, #e74c3c);
           color: white;
@@ -278,14 +312,31 @@ const StudentClassDetailPage = () => {
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn-logout:hover {
+        .btn-danger:hover {
           transform: scale(1.02);
           box-shadow: 0 4px 16px rgba(231, 76, 60, 0.4);
         }
 
-        .btn-ai {
+        .btn-warning {
           padding: 10px 20px;
-          background: linear-gradient(135deg, #6c5ce7, #0984e3, #fdcb6e);
+          background: linear-gradient(135deg, #f39c12, #f1c40f);
+          color: #212529;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 600;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-warning:hover {
+          transform: scale(1.02);
+          box-shadow: 0 4px 16px rgba(241, 196, 15, 0.4);
+        }
+
+        .btn-info {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, #17a2b8, #20c997);
           color: white;
           border: none;
           border-radius: 8px;
@@ -293,43 +344,60 @@ const StudentClassDetailPage = () => {
           font-size: 14px;
           font-weight: 600;
           transition: transform 0.2s, box-shadow 0.2s;
-          animation: pulseGlow 2s ease-in-out infinite;
         }
 
-        .btn-ai:hover {
+        .btn-info:hover {
           transform: scale(1.02);
-          box-shadow: 0 4px 20px rgba(108, 92, 231, 0.5);
+          box-shadow: 0 4px 16px rgba(23, 162, 184, 0.4);
         }
 
-        @keyframes pulseGlow {
-          0%, 100% {
-            box-shadow: 0 0 8px rgba(108, 92, 231, 0.3);
-          }
-          50% {
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.6);
-          }
+        .btn-secondary {
+          padding: 10px 20px;
+          background: rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-secondary:hover {
+          background: rgba(255, 255, 255, 0.2);
+          color: #f5e6b8;
         }
 
         .tab-btn {
           padding: 10px 20px;
-          margin-right: 10px;
           background: transparent;
-          color: rgba(255,255,255,0.7);
+          color: rgba(255, 255, 255, 0.7);
           border: none;
           cursor: pointer;
-          border-radius: 5px 5px 0 0;
+          border-radius: 8px 8px 0 0;
+          transition: background 0.2s, color 0.2s;
           font-size: 14px;
-          font-weight: 600;
-          transition: all 0.2s;
+          font-weight: 500;
         }
 
         .tab-btn.active {
-          background: linear-gradient(135deg, #6c5ce7, #0984e3);
-          color: white;
+          background: rgba(255, 255, 255, 0.12);
+          color: #f5e6b8;
         }
 
         .tab-btn:hover:not(.active) {
-          background: rgba(255,255,255,0.1);
+          background: rgba(255, 255, 255, 0.06);
+          color: #f5e6b8;
+        }
+
+        .back-link {
+          text-decoration: none;
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.2s;
+        }
+
+        .back-link:hover {
+          color: #f5e6b8;
         }
 
         .empty-state {
@@ -347,6 +415,142 @@ const StudentClassDetailPage = () => {
           text-align: center;
           padding: 40px;
           color: rgba(255, 255, 255, 0.7);
+        }
+
+        .quiz-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .quiz-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .quiz-card h4 {
+          margin: 0 0 5px 0;
+          color: #f5e6b8;
+        }
+
+        .quiz-card p {
+          margin: 5px 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .task-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .task-card h4 {
+          margin: 0 0 5px 0;
+          color: #f5e6b8;
+        }
+
+        .task-card p {
+          margin: 5px 0;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(4px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+
+        .modal-content {
+          background: rgba(30, 30, 47, 0.95);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          padding: 25px;
+          max-width: 500px;
+          width: 90%;
+        }
+
+        .modal-content h3 {
+          color: #f5e6b8;
+          margin-top: 0;
+        }
+
+        .form-card {
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          margin-bottom: 30px;
+        }
+
+        .form-card h3 {
+          color: #f5e6b8;
+          margin-top: 0;
+        }
+
+        .form-card input,
+        .form-card textarea,
+        .form-card select {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #fff;
+          padding: 8px 12px;
+          width: 100%;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s;
+          box-sizing: border-box;
+        }
+
+        .form-card input:focus,
+        .form-card textarea:focus,
+        .form-card select:focus {
+          border-color: #f0c040;
+        }
+
+        .form-card label {
+          display: block;
+          margin-bottom: 5px;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+
+        .submission-card {
+          margin-top: 15px;
+          padding: 15px;
+          background: rgba(40,167,69,0.2);
+          border-radius: 8px;
+          color: #f5e6b8;
+          border: 1px solid rgba(40,167,69,0.3);
         }
       `}</style>
 
@@ -391,7 +595,7 @@ const StudentClassDetailPage = () => {
           borderBottom: '1px solid rgba(255,255,255,0.1)'
         }}>
           <div>
-            <Link to="/student/classes" style={{ color: '#6c5ce7', textDecoration: 'none', fontSize: '14px' }}>
+            <Link to="/student/classes" className="back-link">
               ← Volver a Mis Clases
             </Link>
             <h1 style={{ margin: '5px 0 0', color: '#f5e6b8', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 300, letterSpacing: '2px' }}>
@@ -400,14 +604,14 @@ const StudentClassDetailPage = () => {
           </div>
           <button
             onClick={handleLogout}
-            className="btn-logout"
+            className="btn-danger"
           >
             Cerrar Sesión
           </button>
         </div>
 
         {/* Tabs */}
-        <div style={{ marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid rgba(119, 116, 116, 0.74)', marginBottom: '20px' }}>
           <button
             onClick={() => setActiveTab('recursos')}
             className={`tab-btn ${activeTab === 'recursos' ? 'active' : ''}`}
@@ -439,17 +643,17 @@ const StudentClassDetailPage = () => {
         {activeTab === 'quizzes' && (
           <div>
             {selectedQuiz ? (
-              <div className="glass-card">
-                <h2 style={{ color: '#f5e6b8', marginTop: 0 }}>{selectedQuiz.title}</h2>
+              <div className="form-card">
+                <h3>{selectedQuiz.title}</h3>
                 <p style={{ color: 'rgba(255,255,255,0.7)' }}>{selectedQuiz.description}</p>
                 {quizResult && (
-                  <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(40,167,69,0.2)', borderRadius: '8px', color: '#f5e6b8' }}>
-                    <h3>Resultado: {Math.round(quizResult.score * 100) / 100}%</h3>
+                  <div className="submission-card">
+                    <h3 style={{ margin: 0 }}>Resultado: {Math.round(quizResult.score * 100) / 100}%</h3>
                     <p>Correctas: {quizResult.correct_answers} de {quizResult.total_questions}</p>
                   </div>
                 )}
                 {!quizResult && selectedQuiz.questions?.map((q, idx) => (
-                  <div key={q.id} style={{ marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: '8px' }}>
+                  <div key={q.id} style={{ marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <p style={{ color: '#f5e6b8' }}><strong>{idx + 1}. {q.question_text}</strong></p>
                     {['option_a', 'option_b', 'option_c', 'option_d'].filter(opt => q[opt]).map((opt) => (
                       <label key={opt} style={{ display: 'block', margin: '10px 0', color: 'rgba(255,255,255,0.8)' }}>
@@ -469,16 +673,15 @@ const StudentClassDetailPage = () => {
                   <button
                     onClick={handleSubmitQuiz}
                     disabled={submittingQuiz}
-                    className="btn-ai"
-                    style={{ animation: 'none', marginRight: '10px' }}
+                    className="btn-primary"
+                    style={{ marginRight: '10px' }}
                   >
                     {submittingQuiz ? 'Enviando...' : 'Enviar Quiz'}
                   </button>
                 )}
                 <button
                   onClick={() => { setSelectedQuiz(null); setQuizResult(null); }}
-                  className="btn-logout"
-                  style={{ background: 'rgba(255,255,255,0.15)', color: '#f5e6b8' }}
+                  className="btn-secondary"
                 >
                   Cancelar
                 </button>
@@ -486,30 +689,19 @@ const StudentClassDetailPage = () => {
             ) : (
               <>
                 {showResultForQuiz && (
-                  <div style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: '#1a0a2e',
-                    padding: '30px',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                    zIndex: 1000,
-                    minWidth: '300px',
-                    color: '#f5e6b8',
-                    border: '1px solid rgba(255,255,255,0.12)'
-                  }}>
-                    <h3>Resultado del Quiz</h3>
-                    <p><strong>Puntaje:</strong> {showResultForQuiz.score}%</p>
-                    <p><strong>Respuestas correctas:</strong> {showResultForQuiz.correct_answers} de {showResultForQuiz.total_questions}</p>
-                    <button
-                      onClick={closeResultModal}
-                      className="btn-ai"
-                      style={{ marginTop: '15px', animation: 'none' }}
-                    >
-                      Cerrar
-                    </button>
+                  <div className="modal-overlay">
+                    <div className="modal-content">
+                      <h3>Resultado del Quiz</h3>
+                      <p style={{ color: 'rgba(255,255,255,0.8)' }}><strong>Puntaje:</strong> {showResultForQuiz.score}%</p>
+                      <p style={{ color: 'rgba(255,255,255,0.8)' }}><strong>Respuestas correctas:</strong> {showResultForQuiz.correct_answers} de {showResultForQuiz.total_questions}</p>
+                      <button
+                        onClick={closeResultModal}
+                        className="btn-primary"
+                        style={{ marginTop: '15px' }}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
                   </div>
                 )}
                 {quizzes.length === 0 ? (
@@ -518,19 +710,23 @@ const StudentClassDetailPage = () => {
                   </div>
                 ) : (
                   quizzes.map((quiz) => (
-                    <div key={quiz.id} className="glass-card" style={{ marginBottom: '15px' }}>
-                      <h3 style={{ color: '#f5e6b8', margin: '0 0 10px 0' }}>{quiz.title}</h3>
-                      <p style={{ color: 'rgba(255,255,255,0.7)' }}>{quiz.description}</p>
+                    <div key={quiz.id} className="quiz-card" style={{ marginBottom: '15px' }}>
+                      <h4>{quiz.title}</h4>
+                      <p style={{ fontSize: '14px' }}>{quiz.description}</p>
                       {quiz.has_submitted > 0 ? (
                         <button
                           onClick={() => handleViewQuizResult(quiz.id)}
-                          className="btn-ai"
-                          style={{ animation: 'none', padding: '8px 16px', fontSize: '14px' }}
+                          className="btn-info"
+                          style={{ padding: '8px 16px', fontSize: '13px' }}
                         >
                           Ver resultado
                         </button>
                       ) : (
-                        <button onClick={() => handleStartQuiz(quiz.id)} className="btn-ai" style={{ animation: 'none', padding: '8px 16px', fontSize: '14px' }}>
+                        <button
+                          onClick={() => handleStartQuiz(quiz.id)}
+                          className="btn-primary"
+                          style={{ padding: '8px 16px', fontSize: '13px' }}
+                        >
                           Responder Quiz
                         </button>
                       )}
@@ -551,12 +747,16 @@ const StudentClassDetailPage = () => {
             tasks.map((task) => {
               const submission = submissionDetails[task.id];
               return (
-                <div key={task.id} className="glass-card" style={{ marginBottom: '15px' }}>
-                  <h3 style={{ color: '#f5e6b8', margin: '0 0 10px 0' }}>{task.title}</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.7)' }}>{task.description}</p>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}><strong>Fecha límite:</strong> {task.due_date ? new Date(task.due_date).toLocaleDateString('es-ES') : 'Sin fecha'}</p>
+                <div key={task.id} className="task-card" style={{ marginBottom: '15px' }}>
+                  <div style={{ flex: 1 }}>
+                    <h4>{task.title}</h4>
+                    <p style={{ fontSize: '14px' }}>{task.description}</p>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>
+                      <strong>Fecha límite:</strong> {task.due_date ? new Date(task.due_date).toLocaleDateString('es-ES') : 'Sin fecha'}
+                    </p>
+                  </div>
                   {submission ? (
-                    <div style={{ marginTop: '15px', padding: '15px', backgroundColor: 'rgba(40,167,69,0.2)', borderRadius: '8px', color: '#f5e6b8' }}>
+                    <div className="submission-card">
                       <p><strong>✅ Entregada el:</strong> {new Date(submission.submitted_at).toLocaleString('es-ES')}</p>
                       <p><strong>Archivo:</strong> {submission.original_name}</p>
                       {submission.grade !== null && <p><strong>Calificación:</strong> {submission.grade}</p>}
@@ -568,7 +768,7 @@ const StudentClassDetailPage = () => {
                         placeholder="Notas (opcional)"
                         value={taskNotes[task.id] || ''}
                         onChange={(e) => setTaskNotes(prev => ({ ...prev, [task.id]: e.target.value }))}
-                        style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', minHeight: '80px', background: 'rgba(255,255,255,0.06)', color: '#f5e6b8' }}
+                        style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', minHeight: '80px', background: 'rgba(255,255,255,0.06)', color: '#f5e6b8', boxSizing: 'border-box' }}
                       />
                       <input
                         type="file"
@@ -579,8 +779,8 @@ const StudentClassDetailPage = () => {
                       <button
                         onClick={() => handleSubmitTask(task.id)}
                         disabled={submittingTask[task.id]}
-                        className="btn-ai"
-                        style={{ animation: 'none', padding: '8px 16px', fontSize: '14px' }}
+                        className="btn-primary"
+                        style={{ padding: '8px 16px', fontSize: '13px' }}
                       >
                         {submittingTask[task.id] ? 'Subiendo...' : 'Subir Entrega'}
                       </button>
