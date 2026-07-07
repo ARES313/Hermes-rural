@@ -1214,25 +1214,22 @@ const TeacherClassDetailPage = () => {
                           </td>
                           <td style={{ color: '#cccccc' }}>{new Date(submission.submitted_at).toLocaleString()}</td>
                           <td style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', justifyContent: 'center' }}>
+                            <div className="actions-cell">
                               <button
                                 onClick={() => handleViewSubmission(submission.id)}
-                                className="btn-info"
-                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
+                                className="action-btn btn-view"
                               >
                                 👁️ Ver
                               </button>
                               <button
                                 onClick={() => handleDownloadSubmission(submission.id, submission.original_name || submission.filename || 'entrega')}
-                                className="btn-success"
-                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
+                                className="action-btn btn-download"
                               >
                                 ⬇️ Descargar
                               </button>
                               <button
                                 onClick={() => handleOpenGradeModal(submission)}
-                                className={submission.grade !== null && submission.grade !== undefined ? 'btn-warning' : 'btn-primary'}
-                                style={{ padding: '6px 12px', fontSize: '12px', whiteSpace: 'nowrap' }}
+                                className={`action-btn ${submission.grade !== null && submission.grade !== undefined ? 'btn-edit-grade' : 'btn-grade'}`}
                               >
                                 {submission.grade !== null && submission.grade !== undefined ? '✏️ Editar' : '📝 Calificar'}
                               </button>
