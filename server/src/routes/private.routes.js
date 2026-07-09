@@ -6,7 +6,7 @@ router.get('/private/me', verifyToken, (req, res) => {
   res.json({
     ok: true,
     message: 'Protected route accessed successfully',
-    user: req.user
+    user: req.user,
   });
 });
 

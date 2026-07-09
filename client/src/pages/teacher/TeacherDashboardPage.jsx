@@ -1,26 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { getMyClasses } from '../../services/api';
-
-// Símbolos matemáticos para el fondo
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
-
-const generateParticles = (count = 20) => {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: 14 + Math.random() * 24,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * 8,
-    });
-  }
-  return particles;
-};
+import useMathParticles from '../../hooks/useMathParticles';
+import SkeletonLoader from '../../components/SkeletonLoader';
 
 const TeacherDashboardPage = () => {
   const { user, logout } = useAuth();
@@ -28,7 +11,7 @@ const TeacherDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const particles = useMemo(() => generateParticles(20), []);
+  const particles = useMathParticles(20);
 
   useEffect(() => {
     fetchMyClasses();
@@ -52,33 +35,6 @@ const TeacherDashboardPage = () => {
   return (
     <>
       <style>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(0px) translateX(0px);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.2;
-          }
-          90% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-120px) translateX(40px);
-            opacity: 0;
-          }
-        }
-
-        .particle-bg {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          font-weight: bold;
-          color: rgba(255, 215, 0, 0.15);
-          filter: blur(1.5px);
-          animation: floatParticle linear infinite;
-        }
-
         .glass-card {
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);
@@ -341,7 +297,7 @@ const TeacherDashboardPage = () => {
         <div>
           <h2 style={{ color: '#f5e6b8', marginBottom: '15px', fontSize: '1.3rem', fontWeight: 400 }}>Resumen de Clases</h2>
           {loading ? (
-            <div className="loading-text">Cargando clases...</div>
+            <SkeletonLoader variant="card" count={3} />
           ) : classes.length === 0 ? (
             <div className="empty-state">
               No tienes clases asignadas aún

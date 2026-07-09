@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import TeacherContentManager from '../../components/teacher/TeacherContentManager';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import {
   getClassQuizzes,
   createQuiz,
@@ -13,28 +14,13 @@ import {
   deleteTask,
   getTaskSubmissions
 } from '../../services/api';
-
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
-
-const generateParticles = (count = 20) => {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: 14 + Math.random() * 24,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * 8,
-    });
-  }
-  return particles;
-};
+import useMathParticles from '../../hooks/useMathParticles';
+import { useModal } from '../../features/modal/ModalContext';
 
 const TeacherClassDetailPage = () => {
   const { id: classId } = useParams();
   const { user } = useAuth();
+  const { showAlert, showConfirm } = useModal();
   const [activeTab, setActiveTab] = useState('content');
   const [loading, setLoading] = useState(true);
 
@@ -84,7 +70,7 @@ const TeacherClassDetailPage = () => {
     due_date: ''
   });
 
-  const particles = useMemo(() => generateParticles(20), []);
+  const particles = useMathParticles(20);
 
   useEffect(() => {
     fetchData();
@@ -120,11 +106,11 @@ const TeacherClassDetailPage = () => {
   // Quiz handlers
   const addQuestion = () => {
     if (!currentQuestion.question_text) {
-      alert('Complete el texto de la pregunta');
+      showAlert('Complete el texto de la pregunta', 'warning');
       return;
     }
     if (!currentQuestion.option_a || !currentQuestion.option_b || !currentQuestion.option_c || !currentQuestion.option_d) {
-      alert('Complete todas las opciones');
+      showAlert('Complete todas las opciones', 'warning');
       return;
     }
     setNewQuiz({
@@ -149,22 +135,22 @@ const TeacherClassDetailPage = () => {
 
   const handleCreateQuiz = async () => {
     if (!newQuiz.title) {
-      alert('Ingrese un título para el quiz');
+      showAlert('Ingrese un título para el quiz', 'warning');
       return;
     }
     if (newQuiz.questions.length === 0) {
-      alert('Agregue al menos una pregunta');
+      showAlert('Agregue al menos una pregunta', 'warning');
       return;
     }
     try {
       await createQuiz(classId, newQuiz);
-      alert('Quiz creado exitosamente');
+      showAlert('Quiz creado exitosamente');
       setShowQuizForm(false);
       setNewQuiz({ title: '', description: '', questions: [] });
       fetchQuizzes();
     } catch (error) {
       console.error('Error creating quiz:', error);
-      alert(error.response?.data?.message || 'Error al crear el quiz');
+      showAlert(error.response?.data?.message || 'Error al crear el quiz', 'error');
     }
   };
 
@@ -178,7 +164,7 @@ const TeacherClassDetailPage = () => {
       fetchQuizzes();
     } catch (error) {
       console.error('Error updating quiz status:', error);
-      alert('Error al cambiar el estado');
+      showAlert('Error al cambiar el estado', 'error');
     }
   };
 
@@ -195,7 +181,7 @@ const TeacherClassDetailPage = () => {
       setShowQuizResults(true);
     } catch (error) {
       console.error('Error fetching results:', error?.response?.data || error);
-      alert(error?.response?.data?.message || 'Error al cargar los resultados');
+      showAlert(error?.response?.data?.message || 'Error al cargar los resultados', 'error');
     } finally {
       setLoadingResults(false);
     }
@@ -211,7 +197,7 @@ const TeacherClassDetailPage = () => {
       setShowTaskSubmissions(true);
     } catch (error) {
       console.error('Error fetching submissions:', error);
-      alert('Error al cargar las entregas');
+      showAlert('Error al cargar las entregas', 'error');
     } finally {
       setLoadingSubmissions(false);
     }
@@ -230,11 +216,11 @@ const TeacherClassDetailPage = () => {
         window.open(url, '_blank');
         window.URL.revokeObjectURL(url);
       } else {
-        alert('Error al abrir el archivo');
+        showAlert('Error al abrir el archivo', 'error');
       }
     } catch (error) {
       console.error('Error viewing submission:', error);
-      alert('Error al abrir el archivo');
+      showAlert('Error al abrir el archivo', 'error');
     }
   };
 
@@ -256,11 +242,11 @@ const TeacherClassDetailPage = () => {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       } else {
-        alert('Error al descargar el archivo');
+        showAlert('Error al descargar el archivo', 'error');
       }
     } catch (error) {
       console.error('Error downloading submission:', error);
-      alert('Error al descargar el archivo');
+      showAlert('Error al descargar el archivo', 'error');
     }
   };
 
@@ -273,12 +259,12 @@ const TeacherClassDetailPage = () => {
 
   const handleSaveGrade = async () => {
     if (!gradeValue || gradeValue === '') {
-      alert('Ingrese una calificación');
+      showAlert('Ingrese una calificación', 'warning');
       return;
     }
     const gradeNum = parseFloat(gradeValue);
     if (isNaN(gradeNum) || gradeNum < 0 || gradeNum > 100) {
-      alert('La calificación debe ser un número entre 0 y 100');
+      showAlert('La calificación debe ser un número entre 0 y 100', 'warning');
       return;
     }
     try {
@@ -295,7 +281,7 @@ const TeacherClassDetailPage = () => {
       });
       const data = await response.json();
       if (data.ok) {
-        alert('Calificación guardada');
+        showAlert('Calificación guardada');
         setShowGradeModal(false);
         if (currentTaskIdForRefresh) {
           const refreshResponse = await getTaskSubmissions(currentTaskIdForRefresh);
@@ -305,29 +291,29 @@ const TeacherClassDetailPage = () => {
         setGradeValue('');
         setFeedbackValue('');
       } else {
-        alert(data.message || 'Error al guardar la calificación');
+        showAlert(data.message || 'Error al guardar la calificación', 'error');
       }
     } catch (error) {
       console.error('Error saving grade:', error);
-      alert('Error al guardar la calificación');
+      showAlert('Error al guardar la calificación', 'error');
     }
   };
 
   // Task handlers
   const handleCreateTask = async () => {
     if (!newTask.title) {
-      alert('Complete el título de la tarea');
+      showAlert('Complete el título de la tarea', 'warning');
       return;
     }
     try {
       await createTask(classId, newTask);
-      alert('Tarea creada exitosamente');
+      showAlert('Tarea creada exitosamente');
       setShowTaskForm(false);
       setNewTask({ title: '', description: '', due_date: '' });
       fetchTasks();
     } catch (error) {
       console.error('Error creating task:', error);
-      alert(error.response?.data?.message || 'Error al crear la tarea');
+      showAlert(error.response?.data?.message || 'Error al crear la tarea', 'error');
     }
   };
 
@@ -343,33 +329,33 @@ const TeacherClassDetailPage = () => {
 
   const handleUpdateTask = async () => {
     if (!newTask.title) {
-      alert('Complete el título');
+      showAlert('Complete el título', 'warning');
       return;
     }
     try {
       await updateTask(editingTask.id, newTask);
-      alert('Tarea actualizada');
+      showAlert('Tarea actualizada');
       setShowTaskForm(false);
       setEditingTask(null);
       setNewTask({ title: '', description: '', due_date: '' });
       fetchTasks();
     } catch (error) {
       console.error('Error updating task:', error);
-      alert('Error al actualizar la tarea');
+      showAlert('Error al actualizar la tarea', 'error');
     }
   };
 
-  const handleDeleteTask = async (taskId, taskTitle) => {
-    if (window.confirm(`¿Eliminar la tarea "${taskTitle}"?`)) {
+  const handleDeleteTask = (taskId, taskTitle) => {
+    showConfirm(`¿Eliminar la tarea "${taskTitle}"?`, async () => {
       try {
         await deleteTask(taskId);
-        alert('Tarea eliminada');
+        showAlert('Tarea eliminada');
         fetchTasks();
       } catch (error) {
         console.error('Error deleting task:', error);
-        alert('Error al eliminar la tarea');
+        showAlert('Error al eliminar la tarea', 'error');
       }
-    }
+    });
   };
 
   const getStatusBadge = (status) => {
@@ -396,22 +382,7 @@ const TeacherClassDetailPage = () => {
   if (loading) {
     return (
       <>
-        <style>{`
-          @keyframes floatParticle {
-            0% { transform: translateY(0px) translateX(0px); opacity: 0; }
-            10% { opacity: 0.2; }
-            90% { opacity: 0.2; }
-            100% { transform: translateY(-120px) translateX(40px); opacity: 0; }
-          }
-          .particle-bg {
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-            font-weight: bold;
-            color: rgba(255, 215, 0, 0.15);
-            filter: blur(1.5px);
-            animation: floatParticle linear infinite;
-          }
+        <style>{`        
         `}</style>
         <div
           style={{
@@ -446,10 +417,10 @@ const TeacherClassDetailPage = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'rgba(255,255,255,0.7)',
-          fontSize: '1.2rem',
         }}>
-          Cargando...
+          <div style={{ maxWidth: '600px', width: '90%' }}>
+            <SkeletonLoader variant="page" />
+          </div>
         </div>
       </>
     );
@@ -458,33 +429,6 @@ const TeacherClassDetailPage = () => {
   return (
     <>
       <style>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(0px) translateX(0px);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.2;
-          }
-          90% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-120px) translateX(40px);
-            opacity: 0;
-          }
-        }
-
-        .particle-bg {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          font-weight: bold;
-          color: rgba(255, 215, 0, 0.15);
-          filter: blur(1.5px);
-          animation: floatParticle linear infinite;
-        }
-
         .glass-card {
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);
@@ -1177,7 +1121,7 @@ const TeacherClassDetailPage = () => {
               </div>
               
               {loadingSubmissions ? (
-                <div className="loading-text">Cargando entregas...</div>
+                <SkeletonLoader variant="table" count={3} />
               ) : selectedTaskSubmissions.length === 0 ? (
                 <div className="empty-state">No hay entregas aún</div>
               ) : (
@@ -1315,7 +1259,7 @@ const TeacherClassDetailPage = () => {
               </div>
               
               {loadingResults ? (
-                <div className="loading-text">Cargando resultados...</div>
+                <SkeletonLoader variant="table" count={3} />
               ) : !selectedQuizResults || selectedQuizResults.length === 0 ? (
                 <div className="empty-state">No hay intentos aún</div>
               ) : (

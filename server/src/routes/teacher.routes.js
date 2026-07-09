@@ -8,7 +8,7 @@ const {
   createTeacher,
   updateTeacher,
   deleteTeacher,
-  changeTeacherPassword
+  changeTeacherPassword,
 } = require('../controllers/teacher.controller');
 
 // Todas las rutas requieren autenticación
@@ -21,6 +21,5 @@ router.post('/teachers', authorizeRoles('admin'), createTeacher);
 router.put('/teachers/:id', authorizeRoles('admin'), updateTeacher);
 router.delete('/teachers/:id', authorizeRoles('admin'), deleteTeacher);
 router.put('/teachers/:id/password', authorizeRoles('admin'), changeTeacherPassword);
-
 
 module.exports = router;

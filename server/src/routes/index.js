@@ -5,7 +5,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.json({
     ok: true,
-    message: 'Backend proyecto-redes funcionando'
+    message: 'Backend proyecto-redes funcionando',
   });
 });
 

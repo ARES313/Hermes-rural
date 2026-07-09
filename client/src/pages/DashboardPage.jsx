@@ -4,6 +4,7 @@ import { useAuth } from '../features/auth/AuthContext';
 import AdminDashboardPage from './admin/AdminDashboardPage';
 import TeacherDashboardPage from './teacher/TeacherDashboardPage';
 import StudentDashboardPage from './student/StudentDashboardPage';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const DashboardPage = () => {
   const { user, loading } = useAuth();
@@ -15,12 +16,11 @@ const DashboardPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1e1e2f 0%, #2a1a3e 50%, #1a1a2e 100%)',
-        color: '#f5e6b8',
-        fontSize: '1.2rem',
-        fontFamily: "'Segoe UI', Roboto, sans-serif",
+        background: 'linear-gradient(135deg, #0d0221 0%, #1a0a2e 30%, #16213e 60%, #0f3460 100%)',
       }}>
-        Cargando...
+        <div style={{ maxWidth: '500px', width: '90%' }}>
+          <SkeletonLoader variant="page" />
+        </div>
       </div>
     );
   }

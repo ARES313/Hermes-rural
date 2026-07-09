@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import StudentContentManager from '../../components/student/StudentContentManager';
+import SkeletonLoader from '../../components/SkeletonLoader';
 import {
   getStudentClassContent,
   getStudentQuizzes,
@@ -12,28 +13,13 @@ import {
   getStudentSubmission,
   submitStudentTask
 } from '../../services/api';
-
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
-
-const generateParticles = (count = 20) => {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: 14 + Math.random() * 24,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * 8,
-    });
-  }
-  return particles;
-};
+import useMathParticles from '../../hooks/useMathParticles';
+import { useModal } from '../../features/modal/ModalContext';
 
 const StudentClassDetailPage = () => {
   const { id: classId } = useParams();
   const { logout } = useAuth();
+  const { showAlert } = useModal();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('recursos');
   const [classInfo, setClassInfo] = useState(null);
@@ -49,7 +35,7 @@ const StudentClassDetailPage = () => {
   const [showResultForQuiz, setShowResultForQuiz] = useState(null);
   const [submissionDetails, setSubmissionDetails] = useState({});
 
-  const particles = useMemo(() => generateParticles(20), []);
+  const particles = useMathParticles(20);
 
   useEffect(() => {
     fetchClassData();
@@ -105,7 +91,7 @@ const StudentClassDetailPage = () => {
       setShowResultForQuiz(null);
     } catch (err) {
       console.error('Error loading quiz:', err);
-      alert('Error al cargar el quiz');
+      showAlert('Error al cargar el quiz', 'error');
     }
   };
 
@@ -122,7 +108,7 @@ const StudentClassDetailPage = () => {
     });
   } catch (err) {
     console.error('Error loading quiz result:', err);
-    alert('Error al cargar el resultado');
+    showAlert('Error al cargar el resultado', 'error');
   }
 };
 
@@ -138,7 +124,7 @@ const StudentClassDetailPage = () => {
     
     const totalQuestions = selectedQuiz.questions?.length || 0;
     if (answers.length !== totalQuestions) {
-      alert(`Por favor responde todas las preguntas (${answers.length}/${totalQuestions})`);
+      showAlert(`Por favor responde todas las preguntas (${answers.length}/${totalQuestions})`, 'warning');
       return;
     }
     
@@ -150,7 +136,7 @@ const StudentClassDetailPage = () => {
       setSelectedQuiz(null);
     } catch (err) {
       console.error('Error submitting quiz:', err);
-      alert(err.response?.data?.message || 'Error al enviar el quiz');
+      showAlert(err.response?.data?.message || 'Error al enviar el quiz', 'error');
     } finally {
       setSubmittingQuiz(false);
     }
@@ -161,7 +147,7 @@ const StudentClassDetailPage = () => {
     const file = fileInput?.files[0];
     
     if (!file) {
-      alert('Selecciona un archivo para entregar');
+      showAlert('Selecciona un archivo para entregar', 'warning');
       return;
     }
     
@@ -174,13 +160,13 @@ const StudentClassDetailPage = () => {
     setSubmittingTask(prev => ({ ...prev, [taskId]: true }));
     try {
       await submitStudentTask(taskId, formData);
-      alert('✅ Tarea entregada exitosamente');
+      showAlert('Tarea entregada exitosamente');
       await fetchClassData();
       setTaskNotes(prev => ({ ...prev, [taskId]: '' }));
       if (fileInput) fileInput.value = '';
     } catch (err) {
       console.error('Error submitting task:', err);
-      alert(err.response?.data?.message || '❌ Error al entregar la tarea');
+      showAlert(err.response?.data?.message || 'Error al entregar la tarea', 'error');
     } finally {
       setSubmittingTask(prev => ({ ...prev, [taskId]: false }));
     }
@@ -212,10 +198,10 @@ const StudentClassDetailPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#f5e6b8',
-        fontSize: '1.5rem'
       }}>
-        Cargando clase...
+        <div style={{ maxWidth: '600px', width: '90%' }}>
+          <SkeletonLoader variant="page" />
+        </div>
       </div>
     );
   }
@@ -223,33 +209,6 @@ const StudentClassDetailPage = () => {
   return (
     <>
       <style>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(0px) translateX(0px);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.2;
-          }
-          90% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-120px) translateX(40px);
-            opacity: 0;
-          }
-        }
-
-        .particle-bg {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          font-weight: bold;
-          color: rgba(255, 215, 0, 0.15);
-          filter: blur(1.5px);
-          animation: floatParticle linear infinite;
-        }
-
         .glass-card {
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);

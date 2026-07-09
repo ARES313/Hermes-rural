@@ -11,8 +11,10 @@ import {
 import FolderTree from './FolderTree';
 import FileList from './FileList';
 import MoveFileModal from './MoveFileModal';
+import { useModal } from '../../features/modal/ModalContext';
 
 const TeacherContentManager = ({ classId }) => {
+    const { showAlert, showConfirm } = useModal();
     const [folders, setFolders] = useState([]);
     const [flatFolders, setFlatFolders] = useState([]);
     const [selectedFolderId, setSelectedFolderId] = useState(null);
@@ -83,26 +85,25 @@ const TeacherContentManager = ({ classId }) => {
             await createFolder(_classId, data);
             await loadFolders();
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al crear carpeta');
+            showAlert(err.response?.data?.message || 'Error al crear carpeta', 'error');
         }
     };
 
     const handleDeleteFolder = async (_classId, folderId) => {
-        const confirmed = window.confirm('¿Eliminar esta carpeta? Solo se puede si está vacía.');
-        if (!confirmed) return;
+        showConfirm('¿Eliminar esta carpeta? Solo se puede si está vacía.', async () => {
+            try {
+                await deleteFolder(_classId, folderId);
 
-        try {
-            await deleteFolder(_classId, folderId);
+                if (selectedFolderId === folderId) {
+                    setSelectedFolderId(null);
+                }
 
-            if (selectedFolderId === folderId) {
-                setSelectedFolderId(null);
+                await loadFolders();
+                await loadContent();
+            } catch (err) {
+                showAlert(err.response?.data?.message || 'Error al eliminar carpeta', 'error');
             }
-
-            await loadFolders();
-            await loadContent();
-        } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar carpeta');
-        }
+        });
     };
 
     const handleMoveFile = async (_classId, fileId, data) => {
@@ -111,22 +112,21 @@ const TeacherContentManager = ({ classId }) => {
             await loadContent();
             await loadFolders();
         } catch (err) {
-            alert(err.response?.data?.message || 'Error al mover archivo');
+            showAlert(err.response?.data?.message || 'Error al mover archivo', 'error');
             throw err;
         }
     };
 
     const handleDeleteFile = async (fileId, fileName) => {
-        const confirmed = window.confirm(`¿Eliminar "${fileName}"?`);
-        if (!confirmed) return;
-
-        try {
-            await deleteContent(classId, fileId);
-            await loadContent();
-            await loadFolders();
-        } catch (err) {
-            alert(err.response?.data?.message || 'Error al eliminar archivo');
-        }
+        showConfirm(`¿Eliminar "${fileName}"?`, async () => {
+            try {
+                await deleteContent(classId, fileId);
+                await loadContent();
+                await loadFolders();
+            } catch (err) {
+                showAlert(err.response?.data?.message || 'Error al eliminar archivo', 'error');
+            }
+        });
     };
 
     const handleOpenFilePicker = () => {
@@ -153,7 +153,7 @@ const TeacherContentManager = ({ classId }) => {
             await loadFolders();
         } catch (err) {
             console.error('Error al subir archivo:', err);
-            alert(err.response?.data?.message || 'Error al subir archivo');
+            showAlert(err.response?.data?.message || 'Error al subir archivo', 'error');
         } finally {
             setUploading(false);
             event.target.value = '';

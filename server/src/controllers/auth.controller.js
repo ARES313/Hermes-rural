@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database/db');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_redes';
+const { JWT_SECRET } = require('../config/env');
 
 const login = (req, res) => {
   const { email, password } = req.body;
@@ -10,7 +9,7 @@ const login = (req, res) => {
   if (!email || !password) {
     return res.status(400).json({
       ok: false,
-      message: 'Email and password are required'
+      message: 'Email and password are required',
     });
   }
 
@@ -28,21 +27,21 @@ const login = (req, res) => {
       console.error('Error en login:', err.message);
       return res.status(500).json({
         ok: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       });
     }
 
     if (!user) {
       return res.status(401).json({
         ok: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
       });
     }
 
     if (user.status !== 'active') {
       return res.status(403).json({
         ok: false,
-        message: 'Account is inactive. Please contact administrator'
+        message: 'Account is inactive. Please contact administrator',
       });
     }
 
@@ -50,7 +49,7 @@ const login = (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         ok: false,
-        message: 'Invalid email or password'
+        message: 'Invalid email or password',
       });
     }
 
@@ -59,10 +58,10 @@ const login = (req, res) => {
         id: user.id,
         email: user.email,
         role_id: user.role_id,
-        role_name: user.role_name
+        role_name: user.role_name,
       },
       JWT_SECRET,
-      { expiresIn: '8h' }
+      { expiresIn: '8h' },
     );
 
     res.json({
@@ -74,8 +73,8 @@ const login = (req, res) => {
         full_name: user.full_name,
         email: user.email,
         role_id: user.role_id,
-        role_name: user.role_name
-      }
+        role_name: user.role_name,
+      },
     });
   });
 };

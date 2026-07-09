@@ -11,7 +11,7 @@ const {
   getStudentsByClass,
   assignStudentToClass,
   removeStudentFromClass,
-  changeStudentPassword
+  changeStudentPassword,
 } = require('../controllers/student.controller');
 
 // Todas las rutas requieren autenticación
@@ -28,6 +28,10 @@ router.put('/students/:id/password', authorizeRoles('admin'), changeStudentPassw
 // Rutas de asignación de estudiantes a clases
 router.get('/classes/:id/students', authorizeRoles('admin', 'teacher'), getStudentsByClass);
 router.post('/classes/:id/students', authorizeRoles('admin', 'teacher'), assignStudentToClass);
-router.delete('/classes/:id/students/:studentId', authorizeRoles('admin', 'teacher'), removeStudentFromClass);
+router.delete(
+  '/classes/:id/students/:studentId',
+  authorizeRoles('admin', 'teacher'),
+  removeStudentFromClass,
+);
 
 module.exports = router;

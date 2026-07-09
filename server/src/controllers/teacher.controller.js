@@ -20,14 +20,14 @@ const getAllTeachers = (req, res) => {
       return res.status(500).json({
         ok: false,
         message: 'Error al obtener docentes',
-        error: err.message
+        error: err.message,
       });
     }
 
     res.json({
       ok: true,
       count: rows.length,
-      teachers: rows
+      teachers: rows,
     });
   });
 };
@@ -50,20 +50,20 @@ const getTeacherById = (req, res) => {
       return res.status(500).json({
         ok: false,
         message: 'Error al obtener docente',
-        error: err.message
+        error: err.message,
       });
     }
 
     if (!row) {
       return res.status(404).json({
         ok: false,
-        message: 'Docente no encontrado'
+        message: 'Docente no encontrado',
       });
     }
 
     res.json({
       ok: true,
-      teacher: row
+      teacher: row,
     });
   });
 };
@@ -75,7 +75,7 @@ const createTeacher = (req, res) => {
   if (!full_name || !email || !password) {
     return res.status(400).json({
       ok: false,
-      message: 'Los campos full_name, email y password son obligatorios'
+      message: 'Los campos full_name, email y password son obligatorios',
     });
   }
 
@@ -84,7 +84,7 @@ const createTeacher = (req, res) => {
   if (!emailRegex.test(email)) {
     return res.status(400).json({
       ok: false,
-      message: 'Formato de email inválido'
+      message: 'Formato de email inválido',
     });
   }
 
@@ -92,7 +92,7 @@ const createTeacher = (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({
       ok: false,
-      message: 'La contraseña debe tener al menos 6 caracteres'
+      message: 'La contraseña debe tener al menos 6 caracteres',
     });
   }
 
@@ -102,14 +102,14 @@ const createTeacher = (req, res) => {
       console.error('Error al verificar email:', err.message);
       return res.status(500).json({
         ok: false,
-        message: 'Error interno del servidor'
+        message: 'Error interno del servidor',
       });
     }
 
     if (existingUser) {
       return res.status(400).json({
         ok: false,
-        message: 'El email ya está registrado'
+        message: 'El email ya está registrado',
       });
     }
 
@@ -119,14 +119,14 @@ const createTeacher = (req, res) => {
         console.error('Error al obtener rol teacher:', err.message);
         return res.status(500).json({
           ok: false,
-          message: 'Error interno del servidor'
+          message: 'Error interno del servidor',
         });
       }
 
       if (!roleRow) {
         return res.status(500).json({
           ok: false,
-          message: 'Rol teacher no encontrado en la base de datos'
+          message: 'Rol teacher no encontrado en la base de datos',
         });
       }
 
@@ -140,20 +140,20 @@ const createTeacher = (req, res) => {
         VALUES (?, ?, ?, ?, ?)
       `;
 
-      db.run(query, [role_id, full_name, email, hashedPassword, statusValue], function(err) {
+      db.run(query, [role_id, full_name, email, hashedPassword, statusValue], function (err) {
         if (err) {
           console.error('Error al crear docente:', err.message);
           return res.status(500).json({
             ok: false,
             message: 'Error al crear docente',
-            error: err.message
+            error: err.message,
           });
         }
 
         res.status(201).json({
           ok: true,
           message: 'Docente creado exitosamente',
-          teacherId: this.lastID
+          teacherId: this.lastID,
         });
       });
     });
@@ -166,101 +166,109 @@ const updateTeacher = (req, res) => {
   const { full_name, email, status } = req.body;
 
   // Verificar que el usuario existe y es docente
-  db.get(`SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`, [id], (err, teacher) => {
-    if (err) {
-      console.error('Error al verificar docente:', err.message);
-      return res.status(500).json({
-        ok: false,
-        message: 'Error al actualizar docente'
-      });
-    }
+  db.get(
+    `SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`,
+    [id],
+    (err, teacher) => {
+      if (err) {
+        console.error('Error al verificar docente:', err.message);
+        return res.status(500).json({
+          ok: false,
+          message: 'Error al actualizar docente',
+        });
+      }
 
-    if (!teacher) {
-      return res.status(404).json({
-        ok: false,
-        message: 'Docente no encontrado'
-      });
-    }
+      if (!teacher) {
+        return res.status(404).json({
+          ok: false,
+          message: 'Docente no encontrado',
+        });
+      }
 
-    let updates = [];
-    let values = [];
+      const updates = [];
+      const values = [];
 
-    if (full_name !== undefined) {
-      updates.push('full_name = ?');
-      values.push(full_name);
-    }
-    
-    if (email !== undefined) {
-      // Verificar que el nuevo email no esté en uso por otro usuario
-      db.get('SELECT id FROM users WHERE email = ? AND id != ?', [email, id], (err, existingUser) => {
-        if (err) {
-          console.error('Error al verificar email:', err.message);
-          return res.status(500).json({
-            ok: false,
-            message: 'Error al actualizar docente'
-          });
+      if (full_name !== undefined) {
+        updates.push('full_name = ?');
+        values.push(full_name);
+      }
+
+      if (email !== undefined) {
+        // Verificar que el nuevo email no esté en uso por otro usuario
+        db.get(
+          'SELECT id FROM users WHERE email = ? AND id != ?',
+          [email, id],
+          (err, existingUser) => {
+            if (err) {
+              console.error('Error al verificar email:', err.message);
+              return res.status(500).json({
+                ok: false,
+                message: 'Error al actualizar docente',
+              });
+            }
+
+            if (existingUser) {
+              return res.status(400).json({
+                ok: false,
+                message: 'El email ya está registrado por otro usuario',
+              });
+            }
+
+            updates.push('email = ?');
+            values.push(email);
+
+            // Continuar con la actualización después de verificar email
+            proceedWithUpdate();
+          },
+        );
+      } else {
+        proceedWithUpdate();
+      }
+
+      function proceedWithUpdate() {
+        if (status !== undefined) {
+          updates.push('status = ?');
+          values.push(status);
         }
 
-        if (existingUser) {
+        if (updates.length === 0) {
           return res.status(400).json({
             ok: false,
-            message: 'El email ya está registrado por otro usuario'
+            message: 'No hay campos para actualizar',
           });
         }
 
-        updates.push('email = ?');
-        values.push(email);
-        
-        // Continuar con la actualización después de verificar email
-        proceedWithUpdate();
-      });
-    } else {
-      proceedWithUpdate();
-    }
-
-    function proceedWithUpdate() {
-      if (status !== undefined) {
-        updates.push('status = ?');
-        values.push(status);
-      }
-
-      if (updates.length === 0) {
-        return res.status(400).json({
-          ok: false,
-          message: 'No hay campos para actualizar'
-        });
-      }
-
-      // Verificar si la columna updated_at existe antes de usarla
-      db.all("PRAGMA table_info(users)", (err, columns) => {
-        if (!err && columns && Array.isArray(columns)) {
-          const hasUpdatedAt = columns.some(col => col.name === 'updated_at');
-          if (hasUpdatedAt) {
-            updates.push('updated_at = CURRENT_TIMESTAMP');
+        // Verificar si la columna updated_at existe antes de usarla
+        db.all('PRAGMA table_info(users)', (err, columns) => {
+          if (!err && columns && Array.isArray(columns)) {
+            const hasUpdatedAt = columns.some((col) => col.name === 'updated_at');
+            if (hasUpdatedAt) {
+              updates.push('updated_at = CURRENT_TIMESTAMP');
+            }
           }
-        }
-        
-        values.push(id);
-        const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
 
-        db.run(query, values, function(err) {
-          if (err) {
-            console.error('Error al actualizar docente:', err.message);
-            return res.status(500).json({
-              ok: false,
-              message: 'Error al actualizar docente',
-              error: err.message
+          values.push(id);
+          const query = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
+
+          db.run(query, values, function (err) {
+            if (err) {
+              console.error('Error al actualizar docente:', err.message);
+              return res.status(500).json({
+                ok: false,
+                message: 'Error al actualizar docente',
+                error: err.message,
+              });
+            }
+
+            res.json({
+              ok: true,
+              message: 'Docente actualizado exitosamente',
             });
-          }
-
-          res.json({
-            ok: true,
-            message: 'Docente actualizado exitosamente'
           });
         });
-      });
-    }
-  });
+      }
+    },
+  );
 };
 
 // Eliminar docente (borrado lógico o físico)
@@ -275,81 +283,86 @@ const deleteTeacher = (req, res) => {
       return res.status(500).json({
         ok: false,
         message: 'Error al eliminar docente',
-        error: err.message
+        error: err.message,
       });
     }
 
     if (hard_delete === 'true' && classCount.count > 0) {
       return res.status(400).json({
         ok: false,
-        message: 'No se puede eliminar el docente porque tiene clases asignadas. Primero reasigne o elimine sus clases.'
+        message:
+          'No se puede eliminar el docente porque tiene clases asignadas. Primero reasigne o elimine sus clases.',
       });
     }
 
-    db.get(`SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`, [id], (err, teacher) => {
-      if (err) {
-        console.error('Error al verificar docente:', err.message);
-        return res.status(500).json({
-          ok: false,
-          message: 'Error al eliminar docente'
-        });
-      }
+    db.get(
+      `SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`,
+      [id],
+      (err, teacher) => {
+        if (err) {
+          console.error('Error al verificar docente:', err.message);
+          return res.status(500).json({
+            ok: false,
+            message: 'Error al eliminar docente',
+          });
+        }
 
-      if (!teacher) {
-        return res.status(404).json({
-          ok: false,
-          message: 'Docente no encontrado'
-        });
-      }
+        if (!teacher) {
+          return res.status(404).json({
+            ok: false,
+            message: 'Docente no encontrado',
+          });
+        }
 
-      if (hard_delete === 'true') {
-        // Primero actualizar las clases para que no tengan teacher_id (opcional, depende de la lógica de negocio)
-        db.run('UPDATE classes SET teacher_id = NULL WHERE teacher_id = ?', [id], (err) => {
-          if (err) {
-            console.error('Error al actualizar clases del docente:', err.message);
-            return res.status(500).json({
-              ok: false,
-              message: 'Error al eliminar docente',
-              error: err.message
-            });
-          }
-
-          // Luego eliminar el usuario
-          db.run('DELETE FROM users WHERE id = ?', [id], function(err) {
+        if (hard_delete === 'true') {
+          // Primero actualizar las clases para que no tengan teacher_id (opcional, depende de la lógica de negocio)
+          db.run('UPDATE classes SET teacher_id = NULL WHERE teacher_id = ?', [id], (err) => {
             if (err) {
-              console.error('Error al eliminar docente:', err.message);
+              console.error('Error al actualizar clases del docente:', err.message);
               return res.status(500).json({
                 ok: false,
                 message: 'Error al eliminar docente',
-                error: err.message
+                error: err.message,
+              });
+            }
+
+            // Luego eliminar el usuario
+            db.run('DELETE FROM users WHERE id = ?', [id], function (err) {
+              if (err) {
+                console.error('Error al eliminar docente:', err.message);
+                return res.status(500).json({
+                  ok: false,
+                  message: 'Error al eliminar docente',
+                  error: err.message,
+                });
+              }
+
+              res.json({
+                ok: true,
+                message: 'Docente eliminado permanentemente',
+              });
+            });
+          });
+        } else {
+          // Borrado lógico: solo desactivar el usuario
+          db.run('UPDATE users SET status = ? WHERE id = ?', ['inactive', id], function (err) {
+            if (err) {
+              console.error('Error al desactivar docente:', err.message);
+              return res.status(500).json({
+                ok: false,
+                message: 'Error al desactivar docente',
+                error: err.message,
               });
             }
 
             res.json({
               ok: true,
-              message: 'Docente eliminado permanentemente'
+              message: 'Docente desactivado exitosamente',
             });
           });
-        });
-      } else {
-        // Borrado lógico: solo desactivar el usuario
-        db.run('UPDATE users SET status = ? WHERE id = ?', ['inactive', id], function(err) {
-          if (err) {
-            console.error('Error al desactivar docente:', err.message);
-            return res.status(500).json({
-              ok: false,
-              message: 'Error al desactivar docente',
-              error: err.message
-            });
-          }
-
-          res.json({
-            ok: true,
-            message: 'Docente desactivado exitosamente'
-          });
-        });
-      }
-    });
+        }
+      },
+    );
   });
 };
 
@@ -361,54 +374,62 @@ const changeTeacherPassword = (req, res) => {
   if (!newPassword) {
     return res.status(400).json({
       ok: false,
-      message: 'La nueva contraseña es obligatoria'
+      message: 'La nueva contraseña es obligatoria',
     });
   }
 
   if (newPassword.length < 6) {
     return res.status(400).json({
       ok: false,
-      message: 'La contraseña debe tener al menos 6 caracteres'
+      message: 'La contraseña debe tener al menos 6 caracteres',
     });
   }
 
   // Verificar que el usuario existe y es docente
-  db.get(`SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`, [id], (err, teacher) => {
-    if (err) {
-      console.error('Error al verificar docente:', err.message);
-      return res.status(500).json({
-        ok: false,
-        message: 'Error al cambiar contraseña'
-      });
-    }
-
-    if (!teacher) {
-      return res.status(404).json({
-        ok: false,
-        message: 'Docente no encontrado'
-      });
-    }
-
-    // Hashear la nueva contraseña
-    const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
-
-    // Actualizar la contraseña
-    db.run('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [hashedPassword, id], function(err) {
+  db.get(
+    `SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.name = 'teacher'`,
+    [id],
+    (err, teacher) => {
       if (err) {
-        console.error('Error al cambiar contraseña:', err.message);
+        console.error('Error al verificar docente:', err.message);
         return res.status(500).json({
           ok: false,
           message: 'Error al cambiar contraseña',
-          error: err.message
         });
       }
 
-      res.json({
-        ok: true,
-        message: 'Contraseña actualizada exitosamente'
-      });
-    });
-  });
+      if (!teacher) {
+        return res.status(404).json({
+          ok: false,
+          message: 'Docente no encontrado',
+        });
+      }
+
+      // Hashear la nueva contraseña
+      const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+
+      // Actualizar la contraseña
+      db.run(
+        'UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [hashedPassword, id],
+        function (err) {
+          if (err) {
+            console.error('Error al cambiar contraseña:', err.message);
+            return res.status(500).json({
+              ok: false,
+              message: 'Error al cambiar contraseña',
+              error: err.message,
+            });
+          }
+
+          res.json({
+            ok: true,
+            message: 'Contraseña actualizada exitosamente',
+          });
+        },
+      );
+    },
+  );
 };
 
 // module.exports
@@ -418,5 +439,5 @@ module.exports = {
   createTeacher,
   updateTeacher,
   deleteTeacher,
-  changeTeacherPassword
+  changeTeacherPassword,
 };

@@ -1,28 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
-
-// Símbolos matemáticos para las partículas
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
-
-// Genera un array de partículas con propiedades aleatorias
-const generateParticles = (count = 18) => {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
-      left: Math.random() * 100,          // % horizontal
-      top: Math.random() * 100,           // % vertical
-      size: 14 + Math.random() * 24,      // px
-      duration: 8 + Math.random() * 12,   // segundos
-      delay: Math.random() * 8,           // segundos
-      opacityStart: 0.1 + Math.random() * 0.4,
-      opacityEnd: 0.3 + Math.random() * 0.5,
-    });
-  }
-  return particles;
-};
+import useMathParticles from '../hooks/useMathParticles';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -32,8 +11,7 @@ const LoginPage = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // Generar partículas una sola vez al montar el componente
-  const particles = useMemo(() => generateParticles(18), []);
+  const particles = useMathParticles(18);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -62,33 +40,6 @@ const LoginPage = () => {
     <>
       {/* Estilos globales para animaciones y fondo */}
       <style>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(0px) translateX(0px);
-            opacity: 0;
-          }
-          10% {
-            opacity: 1;
-          }
-          90% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-120px) translateX(40px);
-            opacity: 0;
-          }
-        }
-
-        .particle {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          font-weight: bold;
-          color: rgba(255, 215, 0, 0.7);
-          text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-          animation: floatParticle linear infinite;
-        }
-
         .glass-card {
           background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(12px);

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useModal } from '../../features/modal/ModalContext';
+import SkeletonLoader from '../SkeletonLoader';
 
 const FileList = ({ files = [], onMove, onDelete, loading }) => {
+    const { showAlert } = useModal();
     const [busyFileId, setBusyFileId] = useState(null);
 
     const formatFileSize = (bytes) => {
@@ -26,7 +29,7 @@ const FileList = ({ files = [], onMove, onDelete, loading }) => {
     const handleView = async (file) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            alert('No estás autenticado');
+            showAlert('No estás autenticado', 'warning');
             return;
         }
 
@@ -52,7 +55,7 @@ const FileList = ({ files = [], onMove, onDelete, loading }) => {
             setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
         } catch (err) {
             console.error('Error al abrir archivo:', err);
-            alert(err.message || 'No se pudo abrir el archivo');
+            showAlert(err.message || 'No se pudo abrir el archivo', 'error');
         } finally {
             setBusyFileId(null);
         }
@@ -61,7 +64,7 @@ const FileList = ({ files = [], onMove, onDelete, loading }) => {
     const handleDownload = async (file) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            alert('No estás autenticado');
+            showAlert('No estás autenticado', 'warning');
             return;
         }
 
@@ -92,14 +95,14 @@ const FileList = ({ files = [], onMove, onDelete, loading }) => {
             window.URL.revokeObjectURL(blobUrl);
         } catch (err) {
             console.error('Error al descargar archivo:', err);
-            alert(err.message || 'No se pudo descargar el archivo');
+            showAlert(err.message || 'No se pudo descargar el archivo', 'error');
         } finally {
             setBusyFileId(null);
         }
     };
 
     if (loading) {
-        return <div style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.7)' }}>Cargando archivos...</div>;
+        return <SkeletonLoader variant="table" count={4} />;
     }
 
     if (!files.length) {

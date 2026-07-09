@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { getStudentClassContent } from '../../services/api';
+import { useModal } from '../../features/modal/ModalContext';
+import SkeletonLoader from '../SkeletonLoader';
 
 const StudentContentManager = ({ classId, viewUrl, downloadUrl }) => {
+    const { showAlert } = useModal();
     const [allFiles, setAllFiles] = useState([]);
     const [folders, setFolders] = useState([]);
     const [selectedFolderId, setSelectedFolderId] = useState(null);
@@ -114,7 +117,7 @@ const StudentContentManager = ({ classId, viewUrl, downloadUrl }) => {
             setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
         } catch (err) {
             console.error('Error al abrir archivo:', err);
-            alert(err.response?.data?.message || 'No se pudo abrir el archivo');
+            showAlert(err.response?.data?.message || 'No se pudo abrir el archivo', 'error');
         } finally {
             setBusyFileId(null);
         }
@@ -134,7 +137,7 @@ const StudentContentManager = ({ classId, viewUrl, downloadUrl }) => {
             window.URL.revokeObjectURL(blobUrl);
         } catch (err) {
             console.error('Error al descargar archivo:', err);
-            alert(err.response?.data?.message || 'No se pudo descargar el archivo');
+            showAlert(err.response?.data?.message || 'No se pudo descargar el archivo', 'error');
         } finally {
             setBusyFileId(null);
         }
@@ -175,7 +178,7 @@ const StudentContentManager = ({ classId, viewUrl, downloadUrl }) => {
     };
 
     if (loading) {
-        return <div className="loading-text">Cargando recursos...</div>;
+        return <SkeletonLoader variant="table" count={4} />;
     }
 
     return (

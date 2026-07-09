@@ -7,7 +7,7 @@ const {
   getClassById,
   createClass,
   updateClass,
-  deleteClass
+  deleteClass,
 } = require('../controllers/class.controller');
 
 router.use(verifyToken);

@@ -1,23 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const MATH_SYMBOLS = ['π', '∑', '√', '∞', '∫', 'α', 'Ω', 'λ', '+', 'fx'];
-
-const generateParticles = (count = 20) => {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      symbol: MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)],
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: 14 + Math.random() * 24,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * 8,
-    });
-  }
-  return particles;
-};
+import useMathParticles from '../hooks/useMathParticles';
 
 function AiAccessPage() {
   const [code, setCode] = useState('');
@@ -25,7 +8,7 @@ function AiAccessPage() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const particles = useMemo(() => generateParticles(20), []);
+  const particles = useMathParticles(20);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,33 +49,6 @@ function AiAccessPage() {
   return (
     <>
       <style>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(0px) translateX(0px);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.2;
-          }
-          90% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-120px) translateX(40px);
-            opacity: 0;
-          }
-        }
-
-        .particle-bg {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          font-weight: bold;
-          color: rgba(255, 215, 0, 0.15);
-          filter: blur(1.5px);
-          animation: floatParticle linear infinite;
-        }
-
         .glass-card {
           background: rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);

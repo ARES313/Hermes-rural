@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const env = require('./config/env');
 const routes = require('./routes/index');
 const errorHandler = require('./middleware/errorHandler');
+const { globalLimiter, loginLimiter, aiLimiter } = require('./middleware/rateLimiter');
 const dbCheckRoutes = require('./routes/db-check.routes');
 const authRoutes = require('./routes/auth.routes');
 const privateRoutes = require('./routes/private.routes');
@@ -19,8 +20,6 @@ const teacherRoutes = require('./routes/teacher.routes');
 const teacherClassRoutes = require('./routes/teacher-class.routes');
 const studentLearningRoutes = require('./routes/student-learning.routes');
 const aiRoutes = require('./routes/ai.routes');
-const db = require('./database/db');
-
 const app = express();
 console.log('ARCHIVO app.js CARGADO');
 console.log('ENV PATH:', path.resolve(__dirname, '../.env'));
@@ -31,11 +30,10 @@ app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 
-// Debug middleware
-app.use((req, res, next) => {
-  console.log('Request body:', req.body);
-  next();
-});
+// Rate Limiting
+app.use('/api', globalLimiter); // Global: 100 req / 15 min
+app.use('/api/auth/login', loginLimiter); // Login: 5 intentos / min
+app.use('/api/ai', aiLimiter); // IA: 20 req / min
 
 // Rutas públicas / generales
 app.use('/api/ai', aiRoutes);
@@ -54,13 +52,16 @@ app.use('/api/student', studentLearningRoutes);
 // Error handling
 app.use(errorHandler);
 
-const PORT = env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Login endpoint: http://localhost:${PORT}/api/auth/login`);
-  console.log(`Protected endpoint: http://localhost:${PORT}/api/private/me`);
-  console.log(`Classes endpoint: http://localhost:${PORT}/api/classes`);
-  console.log(`Students endpoint: http://localhost:${PORT}/api/students`);
-});
-
 module.exports = app;
+
+// Solo inicia el servidor si se ejecuta directamente (no en tests)
+if (require.main === module) {
+  const PORT = env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Login endpoint: http://localhost:${PORT}/api/auth/login`);
+    console.log(`Protected endpoint: http://localhost:${PORT}/api/private/me`);
+    console.log(`Classes endpoint: http://localhost:${PORT}/api/classes`);
+    console.log(`Students endpoint: http://localhost:${PORT}/api/students`);
+  });
+}
